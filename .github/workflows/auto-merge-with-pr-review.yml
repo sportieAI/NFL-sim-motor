@@ -1,0 +1,21 @@
+name: Auto Merge with PR Review
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  auto-merge:
+    if: github.event.pull_request.merged == true && github.event.pull_request.state == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+        with:
+          ref: main
+      - name: Merge PR branch into main
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git merge ${{ github.event.pull_request.head.ref }}
+          git push origin main
