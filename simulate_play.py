@@ -1,8 +1,12 @@
 def simulate_play(play_call, possession_state):
     """
-    Simulates the outcome of a play using player stats, defensive alignment, weather, and emotion.
-    Returns an outcome dict.
+    Simulates the outcome of a play based on play_call and possession_state.
+    Returns an outcome dictionary.
     """
-    # Placeholder: Replace with probabilistic model using stats and context
-    yards = 5 if play_call['play_type'] == 'run' else 22
-    return {'yards': yards, 'turnover': False}
+    import random
+    outcome = {"yards": random.randint(-3, 25), "turnover": False}
+    # Example logic: big play, turnover chance, etc.
+    if play_call["play_type"] == "pass" and random.random() < 0.05:
+        outcome["turnover"] = True
+        outcome["yards"] = random.randint(-10, 0)
+    return outcome
