@@ -1,4 +1,4 @@
-name: Auto Push All New, Modified, and Deleted Files to Main
+name: Auto Push All New Files to Main
 
 on:
   push:
@@ -15,29 +15,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies (if any)
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      - name: Run tests (if tests present)
-        run: |
-          if [ -f pytest.ini ] || [ -d tests ]; then pytest || exit 1; fi
-
       - name: Configure Git user
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
 
-      - name: Add all new, modified, and deleted files
+      - name: Add all new files not in the repo
         run: |
-          git add -A
-
-      - name: Commit and push changes
+          git ls-files --others --exclude-standard | xargs -r git add
+          
+      - name: Commit and push new files
         run: |
-          git diff --staged --quiet || git commit -m "Automated push: add all new, modified, and deleted files [skip ci]" || echo "No changes to commit"
+          git diff --staged --quiet || git commit -m "Automated push: add all new files [skip ci]" || echo "No new files to commit"
           git push origin main
