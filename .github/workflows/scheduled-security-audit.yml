@@ -1,0 +1,18 @@
+name: Scheduled Security Audit
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Every Monday at 3am
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run security scanner
+        uses: github/codeql-action/init@v2
+        with:
+          languages: clojure
+      - name: Analyze
+        uses: github/codeql-action/analyze@v2
