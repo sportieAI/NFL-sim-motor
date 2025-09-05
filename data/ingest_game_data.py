@@ -3,6 +3,8 @@ import numpy as np
 import requests
 from datetime import datetime
 from sklearn.preprocessing import MinMaxScaler
+
+# Example: External tagging helpers and API keys should be implemented separately
 from utils.tagging_helpers import tag_rivalry, tag_momentum
 from utils.api_keys import SPORTRADAR_KEY, FASTR_KEY
 
@@ -11,11 +13,9 @@ def ingest_team_data(team_id, season_year):
     url = f"https://api.sportradar.com/nfl/official/trial/v7/en/seasons/{season_year}/REG/teams/{team_id}/statistics.json?api_key={SPORTRADAR_KEY}"
     response = requests.get(url)
     data = response.json()
-
     # Extract tendencies
     run_ratio = data["offense"]["run_play_percentage"]
     red_zone_eff = data["offense"]["red_zone_efficiency"]
-
     return {
         "run_ratio": run_ratio,
         "red_zone_efficiency": red_zone_eff,
@@ -27,7 +27,6 @@ def ingest_player_stats(player_id, season_year):
     url = f"https://api.sportsdata.io/v3/nfl/stats/json/PlayerSeasonStatsByPlayerID/{season_year}/{player_id}?key={FASTR_KEY}"
     response = requests.get(url)
     stats = response.json()
-
     return {
         "qb_rating": stats.get("PassingRating", 0),
         "turnover_rate": stats.get("Fumbles", 0) / max(stats.get("Games", 1), 1),
@@ -47,11 +46,9 @@ def ingest_historical_matchup(team_a, team_b):
     matchups = pd.read_csv("data/historical_matchups.csv")
     filtered = matchups[(matchups["team_a"] == team_a) & (matchups["team_b"] == team_b)]
     last_5 = filtered.sort_values("date", ascending=False).head(5)
-
     # Tag rivalry and momentum
     rivalry_score = tag_rivalry(last_5)
     momentum_shift = tag_momentum(last_5)
-
     return {
         "matchup_history": last_5.to_dict("records"),
         "rivalry_score": rivalry_score,
