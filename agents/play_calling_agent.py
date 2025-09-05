@@ -1,5 +1,3 @@
-from agents.coach_agent import CoachAgent
-
 class PlayCallingAgent:
     def __init__(self, team_context, recursion_depth=0, max_depth=3):
         self.team_context = team_context
@@ -8,6 +6,8 @@ class PlayCallingAgent:
 
     def suggest_play(self, game_state):
         if game_state.get("chaos_mode") and self.recursion_depth < self.max_depth:
+            # Avoid circular import by using local import if needed
+            from agents.coach_agent import CoachAgent
             coach = CoachAgent(self.team_context, recursion_depth=self.recursion_depth+1, max_depth=self.max_depth)
             return coach.decide_play(game_state, scenario="critical")
         if game_state.get("yardage") > 10:
