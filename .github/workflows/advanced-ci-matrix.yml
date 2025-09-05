@@ -24,5 +24,8 @@ jobs:
           java-version: ${{ matrix.java-version }}
           distribution: 'temurin'
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Build with Gradle
         run: ./gradlew build
