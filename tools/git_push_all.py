@@ -1,20 +1,28 @@
-import subprocess
-import sys
+from agents.play_calling_agent import PlayCallingAgent
+from agents.defensive_agent import DefensiveAgent
+from agents.special_teams_agent import SpecialTeamsAgent
 
-def run_cmd(cmd):
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    if result.returncode != 0:
-        print(result.stderr)
-        sys.exit(result.returncode)
-    print(result.stdout)
+class CoachAgent:
+    def __init__(self, team_context, recursion_depth=0, max_depth=3):
+        self.team_context = team_context
+        self.recursion_depth = recursion_depth
+        self.max_depth = max_depth
 
-def push_all(commit_msg):
-    run_cmd('git add -A')
-    run_cmd(f'git commit -m "{commit_msg}"')
-    run_cmd('git push origin main')
+    def decide_play(self, game_state, scenario):
+        if self.recursion_depth >= self.max_depth:
+            return "default_play"
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python git_push_all.py \"Your commit message\"")
-        sys.exit(1)
-    push_all(sys.argv[1])
+        if scenario == "critical":
+            play_agent = PlayCallingAgent(self.team_context, recursion_depth=self.recursion_depth+1, max_depth=self.max_depth)
+            return play_agent.suggest_play(game_state)
+        elif scenario == "defense":
+            def_agent = DefensiveAgent(self.team_context, recursion_depth=self.recursion_depth+1, max_depth=self.max_depth)
+            return def_agent.choose_defense(game_state)
+        elif scenario == "special":
+            st_agent = SpecialTeamsAgent(self.team_context, recursion_depth=self.recursion_depth+1, max_depth=self.max_depth)
+            return st_agent.select_special_teams_play(game_state)
+        else:
+            return self._standard_play(game_state)
+
+    def _standard_play(self, game_state):
+        return "run" if game_state.get("down") == 1 else "pass"
