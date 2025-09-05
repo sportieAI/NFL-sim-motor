@@ -1,7 +1,12 @@
-name: Auto Push to Main
+name: Auto Push All Changes
 
 on:
   workflow_dispatch:
+    inputs:
+      commit_message:
+        description: 'Custom commit message'
+        required: false
+        default: 'Automated commit: Add or update files'
   push:
     branches:
       - main
@@ -22,16 +27,12 @@ jobs:
         run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run tests (optional)
-        run: |
-          if [ -f pytest.ini ] || [ -d tests ]; then pytest || echo "No tests found."; else echo "No tests directory."; fi
-
-      - name: Commit & Push changes
+      - name: Commit & Push all changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .
-          git diff --cached --quiet || git commit -m "Automated update via workflow"
+          git add -A
+          git diff --cached --quiet || git commit -m "${{ github.event.inputs.commit_message || 'Automated commit: Add or update files' }}"
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
