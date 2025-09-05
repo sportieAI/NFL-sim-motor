@@ -1,6 +1,7 @@
-name: Auto Push All New Files to Main
+name: Auto Push to Main
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -8,27 +9,30 @@ on:
 jobs:
   auto-push:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Git user
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-      - name: Make changes or add your steps here
+      - name: Install requirements
         run: |
-          # Add your commands for file generation or modification here
-          echo "No changes in this example."
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Set PAT remote
+      - name: Run tests (optional)
         run: |
-          git remote set-url origin https://x-access-token:${{ secrets.ACTIONS_PAT }}@github.com/sportieAI/NFL-sim-motor.git
+          if [ -f pytest.ini ] || [ -d tests ]; then pytest || echo "No tests found."; else echo "No tests directory."; fi
 
-      - name: Push changes
-        run: git push origin main
+      - name: Commit & Push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git diff --cached --quiet || git commit -m "Automated update via workflow"
+          git push origin main
         env:
-          ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
