@@ -1,1 +1,79 @@
-unittest
+# NFL Simulation Engine Dependencies
+# Core simulation and modeling libraries
+simpy>=4.0.0
+mesa>=2.0.0
+pygame>=2.0.0
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# Web framework and API
+fastapi>=0.100.0
+uvicorn>=0.22.0
+requests>=2.31.0
+pydantic>=2.0.0
+
+# Authentication and security
+pyjwt>=2.8.0
+cryptography>=41.0.0
+python-multipart>=0.0.6
+
+# Machine learning and analytics
+scikit-learn>=1.3.0
+hdbscan>=0.8.29
+spacy>=3.6.0
+
+# Causal inference
+dowhy>=0.10.0
+causalml>=0.15.0
+econml>=0.15.0
+
+# Explainable AI
+shap>=0.42.0
+lime>=0.2.0.1
+captum>=0.6.0
+
+# Audio processing and emotional feedback
+librosa>=0.10.0
+pyaudio>=0.2.11
+torchcrepe>=0.0.17
+
+# Data persistence and memory
+redis>=4.5.0
+motor>=3.2.0
+sqlalchemy>=2.0.0
+pymongo>=4.4.0
+firebase-admin>=6.2.0
+supabase>=1.0.0
+
+# Data processing and utilities
+joblib>=1.3.0
+python-dotenv>=1.0.0
+pyyaml>=6.0
+toml>=0.10.2
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.15.0
+
+# Network analysis
+networkx>=3.1
+
+# Development and testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+black>=23.7.0
+flake8>=6.0.0
+mypy>=1.4.0
+
+# Cloud and deployment
+aiobotocore>=2.5.0
+kubernetes>=27.2.0
+prefect>=2.10.0
+
+# Optional: GPU acceleration
+# torch>=2.0.0
+# torchvision>=0.15.0
+# tensorflow>=2.13.0
