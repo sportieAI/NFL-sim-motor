@@ -1,11 +1,14 @@
-while not possession_state["drive_ended"]:
-    play_call = select_play(possession_state)
-    outcome = simulate_play(play_call, possession_state)
-    possession_state = update_possession_state(possession_state, outcome)
-    possession_state["clock"] = update_clock(possession_state["clock"], play_call["play_type"], outcome)
-    if turnover_detected(outcome):
-        possession_state["drive_ended"] = True
-    tags = apply_tags(play_call, outcome, possession_state)
-    cluster_id = cluster_play(play_call, outcome)
-    memory_continuity.update(possession_state, outcome, tags)
-    creative_output.narrate_snap(play_call, outcome, tags)
+from agents.coach_agent import CoachAgent
+
+def simulate_possession(team_context, initial_state):
+    coach = CoachAgent(team_context)
+    game_state = initial_state
+    scenarios = ["standard", "defense", "special", "critical"]
+    for play in range(4):
+        scenario = scenarios[play % len(scenarios)]
+        call = coach.decide_play(game_state, scenario)
+        print(f"Play {play+1} ({scenario}): {call}")
+        # Update game_state as needed
+
+if __name__ == "__main__":
+    simulate_possession({"name": "Ravens"}, {"down": 1, "yardage": 5, "distance": 55})
