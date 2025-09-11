@@ -1,4 +1,4 @@
-🟡 The Orchestrator: Coordinates all modules for simulating a matchup.
+# The Orchestrator: Coordinates all modules for simulating a matchup.
 
 from schemas.possession_state import create_possession_state
 from data.ingest_game_data import load_game_data

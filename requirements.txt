@@ -1,1 +1,5 @@
-unittest
+pandas
+numpy
+requests
+scikit-learn
+pickle-mixin
