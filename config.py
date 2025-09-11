@@ -1,14 +1,49 @@
 import os
-from prefect.blocks.system import Secret
+
+# Try to import prefect, fall back to environment variables if not available
+try:
+    from prefect.blocks.system import Secret
+    PREFECT_AVAILABLE = True
+except ImportError:
+    PREFECT_AVAILABLE = False
+    
+# Meta-learning configuration
+meta_learning = False
+triggers = {}
+
+def enable_meta_learning():
+    """Enable meta-learning with default triggers"""
+    global meta_learning, triggers
+    meta_learning = True
+    triggers = {
+        'high_score': {
+            'condition': lambda score: score > 30,
+            'action': 'optimize_strategy'
+        },
+        'close_game': {
+            'condition': lambda state: abs(state.get('score_diff', 0)) <= 7,
+            'action': 'increase_aggression'
+        },
+        'time_pressure': {
+            'condition': lambda state: state.get('time_remaining', 900) < 120,  # Less than 2 minutes
+            'action': 'urgent_play_calling'
+        }
+    }
 
 def get_s3_settings():
     # Prefer Prefect secret block, fallback to env vars for local dev
-    try:
-        access_key = Secret.load("s3-access-key").get()
-        secret_key = Secret.load("s3-secret-key").get()
-        endpoint_url = Secret.load("s3-endpoint-url").get()
-        bucket = Secret.load("s3-bucket").get()
-    except Exception:
+    if PREFECT_AVAILABLE:
+        try:
+            access_key = Secret.load("s3-access-key").get()
+            secret_key = Secret.load("s3-secret-key").get()
+            endpoint_url = Secret.load("s3-endpoint-url").get()
+            bucket = Secret.load("s3-bucket").get()
+        except Exception:
+            access_key = os.environ.get("S3_ACCESS_KEY", "minioadmin")
+            secret_key = os.environ.get("S3_SECRET_KEY", "minioadmin")
+            endpoint_url = os.environ.get("S3_ENDPOINT_URL", "http://localhost:9000")
+            bucket = os.environ.get("S3_BUCKET", "simulation-archives")
+    else:
         access_key = os.environ.get("S3_ACCESS_KEY", "minioadmin")
         secret_key = os.environ.get("S3_SECRET_KEY", "minioadmin")
         endpoint_url = os.environ.get("S3_ENDPOINT_URL", "http://localhost:9000")
@@ -21,17 +56,24 @@ def get_s3_settings():
     }
 
 def get_mongo_settings():
-    try:
-        mongo_url = Secret.load("mongo-url").get()
-        db_name = Secret.load("mongo-db-name").get()
-    except Exception:
+    if PREFECT_AVAILABLE:
+        try:
+            mongo_url = Secret.load("mongo-url").get()
+            db_name = Secret.load("mongo-db-name").get()
+        except Exception:
+            mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+            db_name = os.environ.get("MONGO_DB_NAME", "sim")
+    else:
         mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
         db_name = os.environ.get("MONGO_DB_NAME", "sim")
     return {"mongo_url": mongo_url, "db_name": db_name}
 
 def get_redis_settings():
-    try:
-        redis_url = Secret.load("redis-url").get()
-    except Exception:
+    if PREFECT_AVAILABLE:
+        try:
+            redis_url = Secret.load("redis-url").get()
+        except Exception:
+            redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+    else:
         redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
     return {"redis_url": redis_url}

@@ -1,4 +1,4 @@
-🟣 Strategic Blueprint: Defines initial possession state with full context.
+# Strategic Blueprint: Defines initial possession state with full context.
 
 def create_possession_state(home_team, away_team, crowd_energy, rivalry, prime_time, coach_profiles):
     return {
