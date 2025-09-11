@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import plotly.offline as py
 
+
 LOGFILE = os.path.join(os.path.dirname(__file__), "../logs/play_state_log.jsonl")
 STATIC_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "score_progression.png")
 INTERACTIVE_HTML_PATH = os.path.join(os.path.dirname(__file__), "score_progression.html")
@@ -49,6 +50,7 @@ def main():
     scores = load_states(LOGFILE)
     plot_static(scores)
     plot_interactive(scores)
+
 
 if __name__ == "__main__":
     main()
