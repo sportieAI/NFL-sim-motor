@@ -38,6 +38,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git
 
+      - name: Run Comprehensive PR #6 Issue Validation
+        id: pr6_validation
+        run: |
+          echo "🔍 Running comprehensive PR #6 issue validation..."
+          
+          # Run the comprehensive PR #6 validator
+          python3 automation/pr6_issue_validator.py . > pr6_validation.log 2>&1
+          exit_code=$?
+          
+          echo "pr6_validation_exit_code=$exit_code" >> $GITHUB_OUTPUT
+          
+          # Always show the output
+          cat pr6_validation.log
+          
+          if [ $exit_code -eq 0 ]; then
+            echo "pr6_validation_passed=true" >> $GITHUB_OUTPUT
+            echo "✅ All PR #6 issues are resolved"
+          else
+            echo "pr6_validation_passed=false" >> $GITHUB_OUTPUT
+            echo "❌ Some PR #6 issues remain unresolved"
+          fi
+
       - name: Run Issue Detection and Auto-Fix
         id: auto_fix
         run: |
@@ -63,6 +85,17 @@ jobs:
             echo "fixes_applied=false" >> $GITHUB_OUTPUT
             echo "report_exists=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Upload PR #6 Validation Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr6-validation-report
+          path: |
+            pr6_validation_report.json
+            pr6_validation.log
+            copilot_instruction_validation.txt
+          retention-days: 30
 
       - name: Upload Automation Report
         if: steps.auto_fix.outputs.report_exists == 'true'
