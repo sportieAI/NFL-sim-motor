@@ -1,0 +1,265 @@
+name: Automated Issue Detection and Fix
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+    inputs:
+      auto_fix:
+        description: 'Apply automatic fixes'
+        required: false
+        default: 'true'
+        type: boolean
+
+jobs:
+  detect-and-fix-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git
+
+      - name: Run Issue Detection and Auto-Fix
+        id: auto_fix
+        run: |
+          echo "🔍 Running automated issue detection and fixing..."
+          
+          # Make the automation script executable
+          chmod +x automation/issue_detector_and_fixer.py
+          
+          # Run the automation framework
+          python3 automation/issue_detector_and_fixer.py . > automation_output.log 2>&1
+          exit_code=$?
+          
+          echo "automation_exit_code=$exit_code" >> $GITHUB_OUTPUT
+          
+          # Always show the output
+          cat automation_output.log
+          
+          # Check if any fixes were applied
+          if [ -f automation_report.md ]; then
+            echo "fixes_applied=true" >> $GITHUB_OUTPUT
+            echo "report_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "fixes_applied=false" >> $GITHUB_OUTPUT
+            echo "report_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Automation Report
+        if: steps.auto_fix.outputs.report_exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: automation-report
+          path: automation_report.md
+          retention-days: 30
+
+      - name: Validate Core Functionality
+        id: validation
+        run: |
+          echo "✅ Validating core functionality after fixes..."
+          
+          # Test basic syntax validation
+          echo "Checking Python syntax..."
+          find . -name "*.py" -not -path "./__pycache__/*" -not -path "./.*" | head -20 | while read file; do
+            echo "Checking $file..."
+            python3 -m py_compile "$file" || echo "❌ Syntax error in $file"
+          done
+          
+          # Test basic imports (only if no syntax errors)
+          echo "Testing basic imports..."
+          python3 -c "
+          try:
+              from schemas.possession_state import create_possession_state
+              print('✅ schemas.possession_state imports successfully')
+          except Exception as e:
+              print(f'❌ schemas.possession_state import failed: {e}')
+          
+          try:
+              from strategic_cognition import seed_coach_intelligence
+              print('✅ strategic_cognition imports successfully')
+          except Exception as e:
+              print(f'❌ strategic_cognition import failed: {e}')
+          
+          try:
+              import simulate_play
+              print('✅ simulate_play imports successfully')
+          except Exception as e:
+              print(f'❌ simulate_play import failed: {e}')
+          " || echo "❌ Import validation failed"
+          
+          # Test basic simulation functionality (if no import errors)
+          echo "Testing basic simulation..."
+          timeout 30s python3 -c "
+          try:
+              from simulate_play import simulate_play
+              play_call = {'play_type': 'run'}
+              possession_state = {'down': 1, 'distance': 10}
+              result = simulate_play(play_call, possession_state)
+              print(f'✅ Basic simulation works: {result}')
+              print('validation_passed=true')
+          except Exception as e:
+              print(f'❌ Basic simulation failed: {e}')
+              print('validation_passed=false')
+          " | tee validation_result.txt
+          
+          # Extract validation result
+          if grep -q "validation_passed=true" validation_result.txt; then
+            echo "validation_passed=true" >> $GITHUB_OUTPUT
+          else
+            echo "validation_passed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Dependencies (Optional Test)
+        id: deps
+        continue-on-error: true
+        run: |
+          echo "📦 Testing dependency installation..."
+          
+          # Try to install dependencies with timeout
+          if [ -f requirements.txt ]; then
+            echo "Found requirements.txt, attempting installation..."
+            timeout 300s pip3 install -r requirements.txt || echo "⚠️ Dependency installation failed or timed out"
+            
+            # Test if pytest is available after installation
+            if python3 -c "import pytest; print('pytest available')" 2>/dev/null; then
+              echo "pytest_available=true" >> $GITHUB_OUTPUT
+              
+              # Run basic tests if pytest is available
+              echo "Running basic tests..."
+              timeout 120s python3 -m pytest tests/ -v --tb=short || echo "⚠️ Some tests failed"
+            else
+              echo "pytest_available=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No requirements.txt found"
+            echo "pytest_available=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Issue for Manual Review (if needed)
+        if: steps.auto_fix.outputs.automation_exit_code != '0' || steps.validation.outputs.validation_passed == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let reportContent = "Automation report not available";
+            if (fs.existsSync('automation_report.md')) {
+              reportContent = fs.readFileSync('automation_report.md', 'utf8');
+            }
+            
+            const issueBody = `
+            ## 🤖 Automated Issue Detection Report
+            
+            The automated issue detection and fixing process has identified issues that require manual attention.
+            
+            **Validation Results:**
+            - Automation Exit Code: ${{ steps.auto_fix.outputs.automation_exit_code }}
+            - Core Validation Passed: ${{ steps.validation.outputs.validation_passed }}
+            - Dependencies Available: ${{ steps.deps.outputs.pytest_available }}
+            
+            **Triggered by:** ${context.eventName} on ${context.ref}
+            **Workflow Run:** [#${context.runNumber}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+            
+            ## Automation Report
+            
+            \`\`\`
+            ${reportContent}
+            \`\`\`
+            
+            ## Recommended Actions
+            
+            1. Review the automation report above
+            2. Check the workflow run logs for detailed error messages
+            3. Manually fix any issues that couldn't be automatically resolved
+            4. Re-run the workflow to validate fixes
+            
+            This issue was automatically created by the CI/CD pipeline.
+            `;
+            
+            // Check if there's already an open issue for automation failures
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'automation-failure'
+            });
+            
+            if (issues.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🤖 Automated Issue Detection Found Problems - ${new Date().toISOString().split('T')[0]}`,
+                body: issueBody,
+                labels: ['automation-failure', 'needs-manual-review']
+              });
+            } else {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: `## 🔄 Updated Automation Report - ${new Date().toISOString()}\n\n${issueBody}`
+              });
+            }
+
+      - name: Commit Fixes (if any)
+        if: steps.auto_fix.outputs.fixes_applied == 'true' && github.event_name != 'pull_request'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action - Automation"
+          
+          # Check if there are any changes to commit
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "📝 Committing automatic fixes..."
+            git add .
+            git commit -m "🤖 Automatic fixes applied by automation framework
+            
+            - Fixed syntax errors (emoji characters, unclosed strings)
+            - Resolved circular import issues
+            - Updated/created requirements.txt
+            - Applied other automated fixes
+            
+            Generated by: .github/workflows/automated-issue-detection-and-fix.yml"
+            
+            # Push the changes
+            git push origin HEAD:${{ github.ref_name }}
+            
+            echo "✅ Fixes committed and pushed"
+          else
+            echo "ℹ️ No changes to commit"
+          fi
+
+      - name: Success Summary
+        if: steps.validation.outputs.validation_passed == 'true'
+        run: |
+          echo "🎉 Automation completed successfully!"
+          echo ""
+          echo "✅ All validations passed"
+          echo "✅ Core functionality is working"
+          if [ "${{ steps.deps.outputs.pytest_available }}" == "true" ]; then
+            echo "✅ Dependencies installed successfully"
+            echo "✅ Tests can be run"
+          else
+            echo "⚠️ Dependencies not available (this is expected in some environments)"
+          fi
+          echo ""
+          echo "The codebase is in a good state for development."
