@@ -152,4 +152,4 @@ if __name__ == "__main__":
 
     print(engine.full_game_storyline())
     print(engine.rivalry_summary("Lions", "Bears"))
-    print(engine.rivalry_highlights()
+    print(engine.rivalry_highlights())

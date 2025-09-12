@@ -1,4 +1,4 @@
-🔴 Coach Intelligence Layer: Decision logic and emotional overrides.
+# 🔴 Coach Intelligence Layer: Decision logic and emotional overrides.
 
 def seed_coach_intelligence(coach_profile, game_context):
     aggression = coach_profile["aggression"]
