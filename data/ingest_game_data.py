@@ -68,3 +68,48 @@ def preprocess_data(df):
     numeric_cols = df.select_dtypes(include=np.number).columns
     df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
     return df
+
+
+def load_game_data(game_context):
+    """Load and aggregate all game data for simulation."""
+    try:
+        # Extract team IDs from context
+        home_team = game_context.get("home_team", "KC")
+        away_team = game_context.get("away_team", "BAL")
+        season_year = game_context.get("season_year", 2024)
+
+        # Load team data (with mock data for demo)
+        team_data = {
+            home_team: {
+                "run_ratio": 0.45,
+                "red_zone_efficiency": 0.78,
+                "team_stats": {"offense": {"yards_per_game": 350}},
+            },
+            away_team: {
+                "run_ratio": 0.52,
+                "red_zone_efficiency": 0.71,
+                "team_stats": {"offense": {"yards_per_game": 320}},
+            },
+        }
+
+        # Load player data (mock)
+        player_data = {
+            "quarterbacks": {
+                home_team: {"name": "Patrick Mahomes", "rating": 105.2},
+                away_team: {"name": "Lamar Jackson", "rating": 101.8},
+            },
+            "running_backs": {
+                home_team: {"name": "Isiah Pacheco", "yards_per_carry": 4.2},
+                away_team: {"name": "Derrick Henry", "yards_per_carry": 4.8},
+            },
+        }
+
+        # Load stadium data
+        stadium_data = ingest_stadium_context(game_context)
+
+        return team_data, player_data, stadium_data
+
+    except Exception as e:
+        # Return mock data if external APIs fail
+        print(f"Warning: Could not load external data ({e}), using mock data")
+        return {}, {}, {}

@@ -1,13 +1,13 @@
 class PossessionMemory:
     """Memory storage for possession-level data."""
-    
+
     def __init__(self):
         self.memories = []
-    
+
     def store_memory(self, memory_data):
         """Store a memory."""
         self.memories.append(memory_data)
-    
+
     def get_memories(self):
         """Get all stored memories."""
         return self.memories

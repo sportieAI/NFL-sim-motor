@@ -20,6 +20,9 @@ pydantic>=1.8.0
 pytest>=6.0.0
 hypothesis>=6.0.0
 
+# Configuration
+pyyaml>=6.0.0
+
 # Optional ML dependencies
 # openai  # Uncomment if needed
 # dowhy  # Causal inference

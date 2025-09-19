@@ -10,14 +10,34 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
+          python-version: '3.11'
+          
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-lint-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-lint-
+            
       - name: Install dependencies
-        run: pip install flake8 black
-      - name: Run flake8
-        run: flake8 .
-      - name: Run black (check)
-        run: black --check .
+        run: |
+          pip install flake8 black mypy isort
+          pip install -r requirements.txt
+          
+      - name: Run black (check formatting)
+        run: black --check --line-length=88 .
+        
+      - name: Run isort (check imports)
+        run: isort --check-only --profile black .
+        
+      - name: Run flake8 (linting)
+        run: flake8 --max-line-length=88 --exclude=__pycache__,venv,env .
+        
+      - name: Run mypy (type checking)
+        run: mypy --ignore-missing-imports --no-strict-optional .
