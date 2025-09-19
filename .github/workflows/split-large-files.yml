@@ -1,1 +1,104 @@
+name: Split and Manage Large Files in PRs
 
+on:
+  workflow_dispatch:
+    inputs:
+      large_file_threshold_mb:
+        description: 'Large file size threshold (MB)'
+        required: false
+        default: '10'
+  pull_request:
+    branches:
+      - main
+      - master
+      - '**'
+
+jobs:
+  split-large-files:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up git identity
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+
+      - name: Set large file threshold (in MB)
+        id: threshold
+        run: |
+          if [ -n "${{ github.event.inputs.large_file_threshold_mb }}" ]; then
+            THRESHOLD="${{ github.event.inputs.large_file_threshold_mb }}"
+          else
+            THRESHOLD="10"
+          fi
+          echo "THRESHOLD_MB=$THRESHOLD" >> $GITHUB_ENV
+          echo "::notice title=Large File Threshold::Threshold set to $THRESHOLD MB"
+
+      - name: Find large files (>$THRESHOLD MB)
+        id: largefiles
+        run: |
+          find . -type f -size +${THRESHOLD_MB}M -not -path "./.git/*" > large_files.txt || true
+          cat large_files.txt
+
+      - name: Check for large files
+        id: checklarge
+        run: |
+          if [ -s large_files.txt ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up GitHub CLI
+        if: steps.checklarge.outputs.found == 'true'
+        uses: cli/cli-action@v2
+
+      # Optional: Add Git LFS support for large files
+      - name: Set up Git LFS and track large files
+        if: steps.checklarge.outputs.found == 'true'
+        run: |
+          git lfs install
+          xargs -a large_files.txt git lfs track
+          git add .gitattributes
+          git commit -m "Track large files with Git LFS" || true
+
+      - name: Split code-only branch (remove large files)
+        if: steps.checklarge.outputs.found == 'true'
+        run: |
+          git checkout -b code-only-${{ github.head_ref }}
+          xargs git rm --cached < large_files.txt || true
+          git commit -am "Remove large files for code-only PR" || true
+          git push origin code-only-${{ github.head_ref }}
+
+      - name: Split assets-only branch (retain only large files)
+        if: steps.checklarge.outputs.found == 'true'
+        run: |
+          git checkout -b assets-only-${{ github.head_ref }} ${{ github.head_ref }}
+          find . -type f | grep -v -F -f large_files.txt | grep -vE '^\.\/\.git' | xargs git rm --cached || true
+          git commit -am "Remove code files for assets-only PR" || true
+          git push origin assets-only-${{ github.head_ref }}
+
+      # Optional: Automatically open PRs for both branches!
+      - name: Create code-only PR
+        if: steps.checklarge.outputs.found == 'true'
+        run: |
+          gh pr create --base ${{ github.base_ref }} --head code-only-${{ github.head_ref }} \
+            --title "Code-only PR (removes large files)" \
+            --body "This PR contains only code changes, with large files removed (threshold: ${THRESHOLD_MB}MB)."
+
+      - name: Create assets-only PR
+        if: steps.checklarge.outputs.found == 'true'
+        run: |
+          gh pr create --base ${{ github.base_ref }} --head assets-only-${{ github.head_ref }} \
+            --title "Assets-only PR (large files only)" \
+            --body "This PR contains only asset (large/binary) files, split for easier review and management (threshold: ${THRESHOLD_MB}MB)."
+
+      - name: Final instructions
+        if: steps.checklarge.outputs.found == 'true'
+        run: |
+          echo "::notice file=README.md::Large files split! PRs created from code-only-${{ github.head_ref }} and assets-only-${{ github.head_ref }}."
