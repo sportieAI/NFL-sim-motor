@@ -20,6 +20,7 @@ def load_states(logfile, key="score"):
                 continue
     return states
 
+
 def plot_static(scores):
     plt.figure(figsize=(10, 4))
     plt.plot(scores, marker="o", color='navy')
@@ -32,6 +33,7 @@ def plot_static(scores):
     print(f"Static image saved to {STATIC_IMAGE_PATH}")
     plt.close()
 
+
 def plot_interactive(scores):
     fig = go.Figure()
     fig.add_trace(go.Scatter(y=scores, mode='lines+markers', name="Score"))
@@ -42,6 +44,7 @@ def plot_interactive(scores):
     )
     py.plot(fig, filename=INTERACTIVE_HTML_PATH, auto_open=False)
     print(f"Interactive HTML plot saved to {INTERACTIVE_HTML_PATH}")
+
 
 def main():
     if not os.path.exists(LOGFILE):
