@@ -1,0 +1,59 @@
+# Production Environment Configuration
+environment: production
+debug: false
+
+# Simulation Engine Settings
+simulation:
+  randomness_enabled: false  # Deterministic for production
+  seed: null  # Use external seed source
+  max_snaps_per_drive: 15
+  timeout_seconds: 180
+
+# Logging Configuration
+logging:
+  level: INFO
+  format: json
+  correlation_id_enabled: true
+  output_file: /var/log/nfl-sim/production.log
+
+# Database Configuration
+database:
+  postgres_url: ${POSTGRES_PROD_URL}
+  redis_url: ${REDIS_PROD_URL}
+  max_connections: 100
+  connection_timeout: 10
+
+# External Services
+services:
+  openai_api_key: ${OPENAI_API_KEY_PROD}
+  rate_limit_rpm: 5000
+  
+# Security
+security:
+  api_key_required: true
+  rate_limiting_enabled: true
+  cors_enabled: false
+  allowed_origins: []
+  ip_allowlist_enabled: true
+  honeypot_enabled: true
+
+# Observability
+observability:
+  metrics_enabled: true
+  tracing_enabled: true
+  jaeger_endpoint: ${JAEGER_PROD_ENDPOINT}
+  prometheus_port: 9090
+  sentry_dsn: ${SENTRY_DSN}
+
+# Feature Flags
+features:
+  narrative_generation: true
+  advanced_analytics: true
+  rl_agent: true
+  honeypot_endpoints: true
+  
+# Storage Configuration
+storage:
+  s3_bucket: ${S3_BUCKET_PROD}
+  backup_enabled: true
+  encryption_enabled: true

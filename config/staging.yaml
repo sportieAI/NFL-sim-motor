@@ -1,0 +1,52 @@
+# Staging Environment Configuration
+environment: staging
+debug: true
+
+# Simulation Engine Settings
+simulation:
+  randomness_enabled: true
+  seed: 42
+  max_snaps_per_drive: 20
+  timeout_seconds: 300
+
+# Logging Configuration
+logging:
+  level: DEBUG
+  format: json
+  correlation_id_enabled: true
+  output_file: /var/log/nfl-sim/staging.log
+
+# Database Configuration
+database:
+  postgres_url: ${POSTGRES_STAGING_URL}
+  redis_url: ${REDIS_STAGING_URL}
+  max_connections: 20
+  connection_timeout: 30
+
+# External Services
+services:
+  openai_api_key: ${OPENAI_API_KEY_STAGING}
+  rate_limit_rpm: 1000
+  
+# Security
+security:
+  api_key_required: true
+  rate_limiting_enabled: true
+  cors_enabled: true
+  allowed_origins:
+    - "https://staging.sportsim.ai"
+    - "http://localhost:3000"
+
+# Observability
+observability:
+  metrics_enabled: true
+  tracing_enabled: true
+  jaeger_endpoint: ${JAEGER_STAGING_ENDPOINT}
+  prometheus_port: 9090
+
+# Feature Flags
+features:
+  narrative_generation: true
+  advanced_analytics: true
+  rl_agent: false  # Disabled in staging
+  honeypot_endpoints: true
