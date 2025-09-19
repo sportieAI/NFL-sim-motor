@@ -1,0 +1,10 @@
+{
+  "pipeline_id": "nfl_default",
+  "version": "1.0",
+  "description": "Standard NFL play feature extraction with scaling and PCA",
+  "input_features": [],
+  "output_features": [],
+  "creation_date": 1758263849.1650271,
+  "sklearn_version": "1.7.2",
+  "parameter_hash": "225ab2761aca59df"
+}

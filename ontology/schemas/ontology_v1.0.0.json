@@ -1,0 +1,75 @@
+{
+  "version": "1.0.0",
+  "status": "active",
+  "tag_definitions": {
+    "aggressive": {
+      "tag_name": "aggressive",
+      "description": "Play calling that prioritizes high-risk, high-reward strategies",
+      "category": "strategy",
+      "expected_confidence_range": [
+        0.0,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    },
+    "conservative": {
+      "tag_name": "conservative",
+      "description": "Play calling that prioritizes ball control and low risk",
+      "category": "strategy",
+      "expected_confidence_range": [
+        0.0,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    },
+    "redzone": {
+      "tag_name": "redzone",
+      "description": "Play occurring in the red zone (within 20 yards of goal)",
+      "category": "field_position",
+      "expected_confidence_range": [
+        0.8,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    },
+    "two_minute_drill": {
+      "tag_name": "two_minute_drill",
+      "description": "Play occurring during two-minute warning situation",
+      "category": "timing",
+      "expected_confidence_range": [
+        0.9,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    },
+    "third_down_conversion": {
+      "tag_name": "third_down_conversion",
+      "description": "Critical third down conversion attempt",
+      "category": "down_distance",
+      "expected_confidence_range": [
+        0.7,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    }
+  },
+  "release_date": 1758263835.1387703,
+  "deprecation_date": null,
+  "changelog": "Initial ontology with fundamental NFL play tags",
+  "hash_signature": "38f04d3394386bb9"
+}
