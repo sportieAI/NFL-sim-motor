@@ -1,0 +1,62 @@
+{
+  "schema_name": "error_report",
+  "version": "1.0.0",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "Error Report",
+    "description": "Structured error report from simulation",
+    "required": [
+      "error_id",
+      "error_type",
+      "message",
+      "timestamp",
+      "severity"
+    ],
+    "properties": {
+      "error_id": {
+        "type": "string",
+        "description": "Unique identifier for the error"
+      },
+      "error_type": {
+        "type": "string",
+        "description": "Type/class of error"
+      },
+      "message": {
+        "type": "string",
+        "description": "Human-readable error message"
+      },
+      "timestamp": {
+        "type": "number",
+        "description": "Unix timestamp when error occurred"
+      },
+      "severity": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "description": "Severity level of the error"
+      },
+      "play_context": {
+        "type": "object",
+        "description": "Context information about the play when error occurred"
+      },
+      "stacktrace": {
+        "type": "string",
+        "description": "Full stacktrace if available"
+      },
+      "recoverable": {
+        "type": "boolean",
+        "default": true,
+        "description": "Whether the error is recoverable"
+      }
+    }
+  },
+  "created_at": 1758264481.982465,
+  "deprecated": false,
+  "deprecation_date": null,
+  "replacement_version": null
+}

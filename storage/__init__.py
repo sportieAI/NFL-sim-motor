@@ -1,0 +1,1 @@
+"""Storage layer for hot/cold data and vector similarity search."""
