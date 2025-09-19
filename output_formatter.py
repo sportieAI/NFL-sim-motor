@@ -15,5 +15,5 @@ def format_for_prediction(possession_state):
         "clustering_lineage": possession_state.get("clustering_lineage", []),
         "win_prob_delta": possession_state.get("win_prob_delta", None),
         "causal_trace": possession_state.get("causal_trace", ""),
-        "integrity_hash": possession_state.get("integrity_hash", "")
+        "integrity_hash": possession_state.get("integrity_hash", ""),
     }

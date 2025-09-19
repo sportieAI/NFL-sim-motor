@@ -8,4 +8,7 @@ def select_play(possession_state):
         play_type = "pass"
     else:
         play_type = "run"
-    return {"play_type": play_type, "description": f"{play_type} play called for the moment"}
+    return {
+        "play_type": play_type,
+        "description": f"{play_type} play called for the moment",
+    }

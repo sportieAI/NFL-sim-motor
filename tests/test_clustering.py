@@ -1,8 +1,10 @@
 """
 Unit tests for clustering module.
 """
+
 import unittest
 from clustering import PlayClusterer  # adjust import as needed
+
 
 class TestPlayClusterer(unittest.TestCase):
     def setUp(self):
@@ -10,7 +12,7 @@ class TestPlayClusterer(unittest.TestCase):
         self.data = [
             {"play": "pass complete", "yards": 8},
             {"play": "run left", "yards": 4},
-            {"play": "pass incomplete", "yards": 0}
+            {"play": "pass incomplete", "yards": 0},
         ]
 
     def test_cluster(self):
@@ -18,5 +20,6 @@ class TestPlayClusterer(unittest.TestCase):
         self.assertIsInstance(clusters, dict)
         self.assertTrue(len(clusters) > 0)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

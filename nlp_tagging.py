@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
+
 class NLPTagger:
     def __init__(self):
         self.vectorizer = CountVectorizer()
@@ -17,7 +18,7 @@ class NLPTagger:
 
     def preprocess(self, text):
         text = text.lower()
-        text = re.sub(r'[^a-z0-9\s]', '', text)
+        text = re.sub(r"[^a-z0-9\s]", "", text)
         return text
 
     def fit(self, texts, labels):
@@ -31,12 +32,17 @@ class NLPTagger:
 
     def sentiment(self, text):
         # Simple rule-based sentiment analysis; replace with advanced model as needed
-        positive = ['good', 'great', 'excellent', 'win', 'success']
-        negative = ['bad', 'poor', 'fail', 'loss', 'injury']
-        score = sum([word in text for word in positive]) - sum([word in text for word in negative])
-        if score > 0: return 'positive'
-        if score < 0: return 'negative'
-        return 'neutral'
+        positive = ["good", "great", "excellent", "win", "success"]
+        negative = ["bad", "poor", "fail", "loss", "injury"]
+        score = sum([word in text for word in positive]) - sum(
+            [word in text for word in negative]
+        )
+        if score > 0:
+            return "positive"
+        if score < 0:
+            return "negative"
+        return "neutral"
+
 
 # Example usage:
 # tagger = NLPTagger()

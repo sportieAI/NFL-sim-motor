@@ -8,6 +8,7 @@ try:
 except ImportError:
     openai = None
 
+
 class ExplainabilityEngine:
     def __init__(self, model="gpt-3.5-turbo"):
         self.model = model
@@ -27,16 +28,25 @@ class ExplainabilityEngine:
         if openai:
             response = openai.ChatCompletion.create(
                 model=self.model,
-                messages=[{"role": "system", "content": "You provide expert, transparent NFL explanations."},
-                          {"role": "user", "content": prompt}],
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You provide expert, transparent NFL explanations.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
                 max_tokens=90,
                 temperature=0.5,
             )
             return response.choices[0].message["content"].strip()
         else:
-            return base + "Reason: The action fits the current down, distance, and strategic context."
+            return (
+                base
+                + "Reason: The action fits the current down, distance, and strategic context."
+            )
 
-# Usage: expl = ExplainabilityEngine(); expl.explain_action(state, action, tags)  
+
+# Usage: expl = ExplainabilityEngine(); expl.explain_action(state, action, tags)
 """
 
 class SimulationOrchestrator:

@@ -5,6 +5,7 @@ import datetime
 
 # --- Event Model Definitions ---
 
+
 @dataclass
 class PlayEvent:
     event_id: str
@@ -22,6 +23,7 @@ class PlayEvent:
     cluster_id: Optional[str]
     confidence: float
 
+
 @dataclass
 class DriveSnapshot:
     drive_id: str
@@ -31,6 +33,7 @@ class DriveSnapshot:
     win_prob_swing: float
     emotions: List[str]
 
+
 @dataclass
 class Narrative:
     event_id: str
@@ -39,12 +42,15 @@ class Narrative:
     sentiment_score: float
     storyline_anchor: str
 
+
 @dataclass
 class Permalink:
     event_id: str
     url: str
 
+
 # --- Ingest Source Stubs ---
+
 
 def ingest_game_data(live: bool = True, seasons: int = 1) -> List[PlayEvent]:
     # Stub: Replace with actual ingestion (API, DB, etc.)
@@ -68,24 +74,28 @@ def ingest_game_data(live: bool = True, seasons: int = 1) -> List[PlayEvent]:
         )
     ]
 
+
 def ingest_odds_and_sentiment() -> Dict[str, Any]:
     # Stub: Replace with Odds API/social sentiment aggregation
     print("[Ingest] Odds & sentiment")
     return {
         "odds": {"NEP": -120, "KCC": +100},
         "narratives": ["Fans nervous after INT", "Momentum shift"],
-        "volatility": 0.13
+        "volatility": 0.13,
     }
+
 
 def ingest_injuries_contracts() -> Dict[str, Any]:
     # Stub: Replace with actual data source
     print("[Ingest] Injuries & contracts signals")
     return {
         "injuries": {"player": "QB1", "status": "Questionable"},
-        "contract_updates": ["RB2 extension"]
+        "contract_updates": ["RB2 extension"],
     }
 
+
 # --- Pipelines ---
+
 
 def historical_backfill_pipeline(seasons: int):
     events = ingest_game_data(live=False, seasons=seasons)
@@ -95,6 +105,7 @@ def historical_backfill_pipeline(seasons: int):
     # simulate logic here
     print("[Pipeline] Storing processed data...")
     # store to DB/file
+
 
 def realtime_pipeline():
     print("[Pipeline] Real-time stream adapter...")
@@ -106,12 +117,14 @@ def realtime_pipeline():
     print("[Pipeline] Route signals to sinks (DB, dashboards, API)...")
     # routing logic
 
+
 def daily_compaction():
     print("[Pipeline] Daily compaction running...")
     print("[Pipeline] Summarizing events...")
     # summary logic
     print("[Pipeline] Drift checks/model health...")
     # drift/model checks
+
 
 # --- Example Usage ---
 
