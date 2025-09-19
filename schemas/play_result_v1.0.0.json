@@ -1,0 +1,76 @@
+{
+  "schema_name": "play_result",
+  "version": "1.0.0",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "NFL Play Result",
+    "description": "Result of an executed play",
+    "required": [
+      "play_id",
+      "play_type",
+      "yards_gained",
+      "timestamp"
+    ],
+    "properties": {
+      "play_id": {
+        "type": "string",
+        "description": "Unique identifier for the play"
+      },
+      "play_type": {
+        "type": "string",
+        "enum": [
+          "run",
+          "pass_short",
+          "pass_medium",
+          "pass_deep",
+          "punt",
+          "field_goal",
+          "extra_point"
+        ],
+        "description": "Type of play executed"
+      },
+      "yards_gained": {
+        "type": "integer",
+        "minimum": -20,
+        "maximum": 100,
+        "description": "Yards gained on the play"
+      },
+      "timestamp": {
+        "type": "number",
+        "description": "Unix timestamp of play execution"
+      },
+      "turnover": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether play resulted in turnover"
+      },
+      "touchdown": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether play resulted in touchdown"
+      },
+      "first_down": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether play achieved first down"
+      },
+      "penalty": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether play had penalty"
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Tags applied to the play"
+      }
+    }
+  },
+  "created_at": 1758264481.9804208,
+  "deprecated": false,
+  "deprecation_date": null,
+  "replacement_version": null
+}

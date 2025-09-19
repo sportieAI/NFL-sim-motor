@@ -1,0 +1,71 @@
+{
+  "schema_name": "game_state",
+  "version": "1.0.0",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "title": "NFL Game State",
+    "description": "Current state of an NFL game simulation",
+    "required": [
+      "down",
+      "distance",
+      "field_position",
+      "quarter",
+      "time_remaining"
+    ],
+    "properties": {
+      "down": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4,
+        "description": "Current down (1-4)"
+      },
+      "distance": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 99,
+        "description": "Yards to go for first down"
+      },
+      "field_position": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100,
+        "description": "Yards from own goal line"
+      },
+      "quarter": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4,
+        "description": "Current quarter"
+      },
+      "time_remaining": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 3600,
+        "description": "Seconds remaining in game"
+      },
+      "score_differential": {
+        "type": "integer",
+        "description": "Point differential (positive = leading)"
+      },
+      "timeouts_remaining": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 3,
+        "description": "Timeouts remaining for possession team"
+      },
+      "possession_team": {
+        "type": "string",
+        "enum": [
+          "HOME",
+          "AWAY"
+        ],
+        "description": "Team currently possessing the ball"
+      }
+    }
+  },
+  "created_at": 1758264481.9779696,
+  "deprecated": false,
+  "deprecation_date": null,
+  "replacement_version": null
+}
