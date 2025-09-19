@@ -1,0 +1,136 @@
+name: Auto Fix and Commit on PR (Multi-language Support)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # PYTHON --------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Python formatters/linters
+        run: pip install black flake8 isort
+
+      # JAVASCRIPT/TYPESCRIPT -----------
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install JS/TS formatters/linters
+        run: npm install --global prettier eslint
+
+      # GO ------------------------------
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.20'
+      - name: Install Go linters
+        run: go install golang.org/x/tools/cmd/goimports@latest
+
+      # RUST ----------------------------
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Install Rust tools
+        run: rustup component add rustfmt clippy
+
+      # JAVA ----------------------------
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Install Spotless for Java
+        run: |
+          curl -LJO https://github.com/diffplug/spotless/releases/download/v6.25.0/spotless-6.25.0.jar
+
+      # C/C++ ---------------------------
+      - name: Install clang-format for C/C++
+        run: sudo apt-get install -y clang-format
+
+      # ---------- AUTO-FIX RUNNERS -----------
+
+      - name: Run Black (Python)
+        run: black . || true
+
+      - name: Run isort (Python)
+        run: isort . || true
+
+      - name: Run Prettier (JS/TS)
+        run: prettier --write "**/*.{js,ts,jsx,tsx,css,json,md}" || true
+
+      - name: Run ESLint (JS/TS)
+        run: eslint "**/*.{js,ts,jsx,tsx}" --fix || true
+
+      - name: Run goimports (Go)
+        run: |
+          find . -type f -name "*.go" -exec goimports -w {} \; || true
+
+      - name: Run rustfmt (Rust)
+        run: |
+          if [ -f Cargo.toml ]; then
+            cargo fmt --all || true
+          fi
+
+      - name: Run clippy (Rust, lint only)
+        run: |
+          if [ -f Cargo.toml ]; then
+            cargo clippy --fix --allow-dirty --allow-staged || true
+          fi
+
+      - name: Run Spotless (Java)
+        run: |
+          find . -type f -name "*.java" > java_files.txt || true
+          if [ -s java_files.txt ]; then
+            java -jar spotless-6.25.0.jar apply || true
+          fi
+
+      - name: Run clang-format (C/C++)
+        run: |
+          find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) -exec clang-format -i {} \; || true
+
+      # ---------- COMMIT AND PR COMMENT -----------
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git status --porcelain
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push fixes
+        if: steps.changes.outputs.changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: automated code fixes for multiple languages"
+          git push origin HEAD:${{ github.head_ref }}
+
+      - name: Comment on PR about automated fixes
+        if: steps.changes.outputs.changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "🛠️ Automated code fixes (formatting, lint, etc) for multiple languages have been applied and pushed to this PR."
+            })
