@@ -1,14 +1,16 @@
 import random
 
+
 class ExplainabilityNLP:
     """
     Generates explanations for agent decisions using tags and templates.
     """
+
     TEMPLATES = [
         "The agent chose {action} because {reason_1} and {reason_2}.",
         "Due to {reason_1} and {reason_2}, the agent decided to {action}.",
         "{action_cap} was selected considering {reason_1} with {reason_2} as a factor.",
-        "Decision: {action}. Influences: {reason_1}, {reason_2}."
+        "Decision: {action}. Influences: {reason_1}, {reason_2}.",
     ]
     REASON_MAP = {
         "conversion_rate:3rd_down_high": "a high 3rd down conversion rate",
@@ -23,7 +25,7 @@ class ExplainabilityNLP:
         # Add more mappings as needed
     }
 
-    def explain(self, action:str, tags:list):
+    def explain(self, action: str, tags: list):
         # Pick up to two mapped reasons, fallback to the raw tag if not mapped
         mapped = [self.REASON_MAP.get(tag, tag.replace("_", " ")) for tag in tags]
         if not mapped:
@@ -34,5 +36,5 @@ class ExplainabilityNLP:
             action=action,
             action_cap=action.capitalize(),
             reason_1=selected[0],
-            reason_2=selected[1]
+            reason_2=selected[1],
         )

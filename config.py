@@ -1,9 +1,12 @@
 import os
+
 try:
     from prefect.blocks.system import Secret
+
     PREFECT_AVAILABLE = True
 except ImportError:
     PREFECT_AVAILABLE = False
+
 
 def get_s3_settings():
     # Prefer Prefect secret block, fallback to env vars for local dev
@@ -23,13 +26,14 @@ def get_s3_settings():
         secret_key = os.environ.get("S3_SECRET_KEY", "minioadmin")
         endpoint_url = os.environ.get("S3_ENDPOINT_URL", "http://localhost:9000")
         bucket = os.environ.get("S3_BUCKET", "simulation-archives")
-    
+
     return {
         "access_key": access_key,
         "secret_key": secret_key,
         "endpoint_url": endpoint_url,
         "bucket": bucket,
     }
+
 
 def get_mongo_settings():
     if PREFECT_AVAILABLE:
@@ -42,8 +46,9 @@ def get_mongo_settings():
     else:
         mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
         db_name = os.environ.get("MONGO_DB_NAME", "sim")
-    
+
     return {"mongo_url": mongo_url, "db_name": db_name}
+
 
 def get_redis_settings():
     if PREFECT_AVAILABLE:
@@ -53,5 +58,5 @@ def get_redis_settings():
             redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
     else:
         redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-    
+
     return {"redis_url": redis_url}

@@ -8,6 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 from utils.tagging_helpers import tag_rivalry, tag_momentum
 from utils.api_keys import SPORTRADAR_KEY, FASTR_KEY
 
+
 def ingest_team_data(team_id, season_year):
     # Pull team-level stats from Sportradar
     url = f"https://api.sportradar.com/nfl/official/trial/v7/en/seasons/{season_year}/REG/teams/{team_id}/statistics.json?api_key={SPORTRADAR_KEY}"
@@ -19,8 +20,9 @@ def ingest_team_data(team_id, season_year):
     return {
         "run_ratio": run_ratio,
         "red_zone_efficiency": red_zone_eff,
-        "team_stats": data
+        "team_stats": data,
     }
+
 
 def ingest_player_stats(player_id, season_year):
     # Pull player stats from BallDontLie or SportsReference
@@ -30,16 +32,20 @@ def ingest_player_stats(player_id, season_year):
     return {
         "qb_rating": stats.get("PassingRating", 0),
         "turnover_rate": stats.get("Fumbles", 0) / max(stats.get("Games", 1), 1),
-        "raw_stats": stats
+        "raw_stats": stats,
     }
+
 
 def ingest_stadium_conditions(stadium_name):
     # Simulate environmental context
     conditions = {
         "Arrowhead": {"wind": 12, "turf": "grass", "crowd_noise": 0.95},
-        "M&T Bank": {"wind": 6, "turf": "turf", "crowd_noise": 0.88}
+        "M&T Bank": {"wind": 6, "turf": "turf", "crowd_noise": 0.88},
     }
-    return conditions.get(stadium_name, {"wind": 0, "turf": "unknown", "crowd_noise": 0.5})
+    return conditions.get(
+        stadium_name, {"wind": 0, "turf": "unknown", "crowd_noise": 0.5}
+    )
+
 
 def ingest_historical_matchup(team_a, team_b):
     # Pull last 5 matchups from Pro Football Reference
@@ -52,8 +58,9 @@ def ingest_historical_matchup(team_a, team_b):
     return {
         "matchup_history": last_5.to_dict("records"),
         "rivalry_score": rivalry_score,
-        "momentum_shift": momentum_shift
+        "momentum_shift": momentum_shift,
     }
+
 
 def preprocess_data(df):
     # Normalize numerical features

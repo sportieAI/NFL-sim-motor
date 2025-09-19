@@ -8,7 +8,12 @@ class SpecialTeamsAgent:
         if game_state.get("fake_punt") and self.recursion_depth < self.max_depth:
             # Use local import to avoid circular dependency
             from agents.coach_agent import CoachAgent
-            coach = CoachAgent(self.team_context, recursion_depth=self.recursion_depth+1, max_depth=self.max_depth)
+
+            coach = CoachAgent(
+                self.team_context,
+                recursion_depth=self.recursion_depth + 1,
+                max_depth=self.max_depth,
+            )
             return coach.decide_play(game_state, scenario="special")
         if game_state.get("distance") > 50:
             return "punt"

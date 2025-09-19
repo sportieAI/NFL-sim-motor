@@ -8,17 +8,21 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+
 class DQN(nn.Module):
     def __init__(self, state_dim, action_dim):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Linear(state_dim, 128), nn.ReLU(),
-            nn.Linear(128, 128), nn.ReLU(),
-            nn.Linear(128, action_dim)
+            nn.Linear(state_dim, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Linear(128, action_dim),
         )
 
     def forward(self, x):
         return self.net(x)
+
 
 class RLPlayAgent:
     def __init__(self, state_dim, action_dim, lr=1e-3, gamma=0.99):
@@ -49,7 +53,9 @@ class RLPlayAgent:
         if len(self.memory) < self.batch_size:
             return
         batch = np.random.choice(len(self.memory), self.batch_size, replace=False)
-        states, actions, rewards, next_states, dones = zip(*[self.memory[i] for i in batch])
+        states, actions, rewards, next_states, dones = zip(
+            *[self.memory[i] for i in batch]
+        )
         states = torch.tensor(states, dtype=torch.float32)
         actions = torch.tensor(actions, dtype=torch.int64)
         rewards = torch.tensor(rewards, dtype=torch.float32)
@@ -68,6 +74,7 @@ class RLPlayAgent:
         self.learn_step += 1
         if self.learn_step % 100 == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
+
 
 # Usage: agent = RLPlayAgent(state_dim, action_dim)
 # action = agent.select_action(state)

@@ -1,4 +1,7 @@
-🔴 Coach Intelligence Layer: Decision logic and emotional overrides.
+"""
+Coach Intelligence Layer: Decision logic and emotional overrides.
+"""
+
 
 def seed_coach_intelligence(coach_profile, game_context):
     aggression = coach_profile["aggression"]
@@ -8,5 +11,5 @@ def seed_coach_intelligence(coach_profile, game_context):
         aggression += 0.05  # crowd pressure
     return {
         "adjusted_aggression": min(aggression, 1.0),
-        "decision_model": f"{coach_profile['name']} logic tree"
+        "decision_model": f"{coach_profile['name']} logic tree",
     }

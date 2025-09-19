@@ -12,6 +12,7 @@ import aiobotocore
 import motor.motor_asyncio
 import redis.asyncio as aioredis
 
+
 # ----------- S3/MinIO Async Client Example ----------- #
 async def upload_to_s3(bucket: str, key: str, data: bytes, endpoint_url=None):
     session = aiobotocore.get_session()
@@ -24,18 +25,27 @@ async def upload_to_s3(bucket: str, key: str, data: bytes, endpoint_url=None):
     ) as client:
         await client.put_object(Bucket=bucket, Key=key, Body=data)
 
+
 # ----------- MongoDB Async Client Example ----------- #
-async def insert_to_mongo(document: dict, db_url="mongodb://localhost:27017", db_name="sim", collection="events"):
+async def insert_to_mongo(
+    document: dict,
+    db_url="mongodb://localhost:27017",
+    db_name="sim",
+    collection="events",
+):
     client = motor.motor_asyncio.AsyncIOMotorClient(db_url)
     db = client[db_name]
     return await db[collection].insert_one(document)
+
 
 # ----------- Redis Async Client Example ----------- #
 async def cache_in_redis(key: str, value: str, redis_url="redis://localhost:6379/0"):
     redis = aioredis.from_url(redis_url)
     await redis.set(key, value)
 
+
 # ================== Prefect Tasks ================== #
+
 
 @task(name="Terminate Simulation", retries=2, retry_delay_seconds=3)
 async def terminate_simulation(sim_id: str):
@@ -49,7 +59,14 @@ async def terminate_simulation(sim_id: str):
         logger.error(f"Failed to terminate simulation: {e}")
         raise
 
-@task(name="Persist Final Events and Memories", retries=2, retry_delay_seconds=3, cache_key_fn=task_input_hash, cache_expiration=timedelta(minutes=5))
+
+@task(
+    name="Persist Final Events and Memories",
+    retries=2,
+    retry_delay_seconds=3,
+    cache_key_fn=task_input_hash,
+    cache_expiration=timedelta(minutes=5),
+)
 async def persist_events_and_memories(sim_id: str, tenant_id: str) -> List[Dict]:
     logger = get_run_logger()
     try:
@@ -70,6 +87,7 @@ async def persist_events_and_memories(sim_id: str, tenant_id: str) -> List[Dict]
         logger.error(f"Enrichment/persistence failed: {e}")
         raise
 
+
 @task(name="Archive Results", retries=2)
 async def archive_results(sim_id: str, include: List[str]):
     logger = get_run_logger()
@@ -79,12 +97,13 @@ async def archive_results(sim_id: str, include: List[str]):
             bucket="simulation-archives",
             key=f"{sim_id}/archive.txt",
             data=archive_content,
-            endpoint_url="http://localhost:9000"  # MinIO example
+            endpoint_url="http://localhost:9000",  # MinIO example
         )
         logger.info(f"Archive for simulation {sim_id} uploaded to S3/MinIO.")
     except Exception as e:
         logger.error(f"Archiving failed: {e}")
         raise
+
 
 @task(name="Generate Narrative", retries=2)
 async def generate_and_persist_narrative(sim_id: str):
@@ -100,6 +119,7 @@ async def generate_and_persist_narrative(sim_id: str):
         logger.error(f"Narrative generation/storage failed: {e}")
         raise
 
+
 @task(name="Collect Analytics and Metrics", retries=2)
 async def collect_analytics_and_metrics(sim_id: str):
     logger = get_run_logger()
@@ -113,6 +133,7 @@ async def collect_analytics_and_metrics(sim_id: str):
         logger.error(f"Analytics failed: {e}")
         raise
 
+
 @task(name="Post-Simulation Hooks", retries=2)
 async def post_simulation_hooks(sim_id: str):
     logger = get_run_logger()
@@ -122,6 +143,7 @@ async def post_simulation_hooks(sim_id: str):
     except Exception as e:
         logger.error(f"Post-simulation hooks failed: {e}")
         raise
+
 
 @flow(name="Async Finalize Simulation Pipeline")
 async def finalize_simulation_pipeline(sim_id: str, tenant_id: str):
@@ -134,8 +156,10 @@ async def finalize_simulation_pipeline(sim_id: str, tenant_id: str):
     await post_simulation_hooks(sim_id)
     logger.info(f"Simulation finalization complete for {sim_id}")
 
+
 if __name__ == "__main__":
     import asyncio
+
     sim_id = "SIM123"
     tenant_id = "tenant_abc"
     asyncio.run(finalize_simulation_pipeline(sim_id, tenant_id))

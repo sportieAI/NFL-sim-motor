@@ -1,6 +1,7 @@
 from engine.tagging_engine import TaggingEngine
 from engine.explainability_nlp import ExplainabilityNLP
 
+
 class GenericAgent:
     def __init__(self, name="Agent"):
         self.name = name
@@ -9,7 +10,7 @@ class GenericAgent:
         self.last_action = None
         self.last_tags = []
 
-    def decide(self, state:dict):
+    def decide(self, state: dict):
         # Example: Decision logic (replace with actual model or rules)
         if state.get("down") == "3" and state.get("distance") == "long":
             action = "pass_deep"

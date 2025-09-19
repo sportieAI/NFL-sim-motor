@@ -1,5 +1,6 @@
 import time
 
+
 class MetaLearningTrigger:
     """
     Automates meta-learning triggers for simulation engines.
@@ -37,6 +38,7 @@ class MetaLearningTrigger:
             if condition(game_state):
                 self.learning_callback(game_state)
                 break
+
 
 # Example usage:
 # def my_learning_callback(state):

@@ -4,10 +4,12 @@ Leverages OpenAI or HuggingFace LLMs for play-by-play and color commentary.
 """
 
 import os
+
 try:
     import openai
 except ImportError:
     openai = None
+
 
 class GenerativeCommentary:
     def __init__(self, model="gpt-3.5-turbo", temperature=0.8):
@@ -24,13 +26,19 @@ class GenerativeCommentary:
         if openai:
             response = openai.ChatCompletion.create(
                 model=self.model,
-                messages=[{"role": "system", "content": "You are a creative, insightful sports commentator."},
-                          {"role": "user", "content": prompt}],
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a creative, insightful sports commentator.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
                 max_tokens=90,
                 temperature=self.temperature,
             )
             return response.choices[0].message["content"].strip()
         else:
             return f"[AI Commentary]: {play_summary} (Install openai for full feature)"
+
 
 # Usage: commentator = GenerativeCommentary(); text = commentator.generate("Mahomes escapes pressure, throws deep TD.")

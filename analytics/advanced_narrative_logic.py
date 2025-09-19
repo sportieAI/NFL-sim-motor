@@ -1,9 +1,8 @@
-import json
-from datetime import datetime
-from collections import defaultdict, deque
-from typing import List, Dict, Any, Optional
+from collections import deque
+from typing import List, Dict, Any
 
 ARC_PHASES = ["setup", "rising_action", "climax", "falling_action", "resolution"]
+
 
 class NarrativeEvent:
     def __init__(self, event: Dict[str, Any]):
@@ -15,10 +14,12 @@ class NarrativeEvent:
         self.tags = event.get("tags", [])
         self.raw = event
 
+
 class NarrativeTracker:
     """
     Tracks storyline, arc phase, tension, and highlights for a single agent or team.
     """
+
     def __init__(self, entity_id: str):
         self.entity = entity_id
         self.events: List[NarrativeEvent] = []
@@ -49,7 +50,11 @@ class NarrativeTracker:
         event["arc_phase"] = self.phase
 
         # Highlight reel (pivotal moments)
-        if "highlight" in nev.tags or nev.event_type in ["clutch", "turnover", "big_play"]:
+        if "highlight" in nev.tags or nev.event_type in [
+            "clutch",
+            "turnover",
+            "big_play",
+        ]:
             event["highlight_reel"] = True
         else:
             event["highlight_reel"] = False
@@ -75,18 +80,23 @@ class NarrativeTracker:
         # Summarize narrative arc for dashboards, recaps, or LLM input
         summary = []
         for event in self.events:
-            summary.append(event.raw.get("headline", f"{event.entity} {event.event_type}"))
+            summary.append(
+                event.raw.get("headline", f"{event.entity} {event.event_type}")
+            )
         return " | ".join(summary)
 
     def highlight_reel(self) -> List[Dict[str, Any]]:
         return [evt.raw for evt in self.events if getattr(evt, "highlight_reel", False)]
 
+
 # --------- Multi-Agent/Team Narrative ---------
+
 
 class MultiAgentNarrativeEngine:
     """
     Orchestrates narrative tracking for multiple entities, supports cross-entity drama.
     """
+
     def __init__(self):
         self.agents: Dict[str, NarrativeTracker] = {}
 
@@ -103,7 +113,9 @@ class MultiAgentNarrativeEngine:
     def highlight_reels(self) -> Dict[str, List[Dict[str, Any]]]:
         return {eid: tracker.highlight_reel() for eid, tracker in self.agents.items()}
 
+
 # --------- LLM Narration Integration (stub) ---------
+
 
 def generate_llm_narrative(summary: str) -> str:
     """
@@ -112,17 +124,51 @@ def generate_llm_narrative(summary: str) -> str:
     # Example stub; replace with actual LLM call
     return f"Narrator: {summary}"
 
+
 # --------- Example usage in simulation ---------
 
 if __name__ == "__main__":
     engine = MultiAgentNarrativeEngine()
     # Simulate event stream
     events = [
-        {"timestamp": "2025-09-05T01:00:00", "entity": "QB_17", "event": "snap", "outcome": "success", "score_delta": 0},
-        {"timestamp": "2025-09-05T01:00:05", "entity": "QB_17", "event": "big_play", "outcome": "complete", "score_delta": 40, "tags": ["highlight"]},
-        {"timestamp": "2025-09-05T01:00:10", "entity": "QB_17", "event": "clutch", "outcome": "touchdown", "score_delta": 7, "tags": ["highlight"]},
-        {"timestamp": "2025-09-05T01:00:15", "entity": "QB_17", "event": "kneel_down", "outcome": "success", "score_delta": 0},
-        {"timestamp": "2025-09-05T01:01:00", "entity": "LB_52", "event": "turnover", "outcome": "fumble_recovery", "score_delta": 0, "tags": ["highlight"]},
+        {
+            "timestamp": "2025-09-05T01:00:00",
+            "entity": "QB_17",
+            "event": "snap",
+            "outcome": "success",
+            "score_delta": 0,
+        },
+        {
+            "timestamp": "2025-09-05T01:00:05",
+            "entity": "QB_17",
+            "event": "big_play",
+            "outcome": "complete",
+            "score_delta": 40,
+            "tags": ["highlight"],
+        },
+        {
+            "timestamp": "2025-09-05T01:00:10",
+            "entity": "QB_17",
+            "event": "clutch",
+            "outcome": "touchdown",
+            "score_delta": 7,
+            "tags": ["highlight"],
+        },
+        {
+            "timestamp": "2025-09-05T01:00:15",
+            "entity": "QB_17",
+            "event": "kneel_down",
+            "outcome": "success",
+            "score_delta": 0,
+        },
+        {
+            "timestamp": "2025-09-05T01:01:00",
+            "entity": "LB_52",
+            "event": "turnover",
+            "outcome": "fumble_recovery",
+            "score_delta": 0,
+            "tags": ["highlight"],
+        },
     ]
     for evt in events:
         enriched_evt = engine.update(evt)

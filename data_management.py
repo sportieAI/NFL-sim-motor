@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 def save(data, filename):
     # SHA-256 hash for integrity
     hash = generate_integrity_hash(data)

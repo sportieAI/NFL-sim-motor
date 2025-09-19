@@ -1,9 +1,8 @@
-import json
-from datetime import datetime
-from collections import defaultdict, deque
-from typing import List, Dict, Any, Optional
+from collections import deque
+from typing import List, Dict, Any
 
 ARC_PHASES = ["setup", "rising_action", "climax", "falling_action", "resolution"]
+
 
 class TeamArc:
     def __init__(self, team_id: str, rival_id: Optional[str] = None):
@@ -76,12 +75,19 @@ class TeamArc:
         return " | ".join(self.headlines)
 
     def highlight_reel(self):
-        return [evt for evt in self.events if evt.get("arc_phase") in ["climax", "falling_action"] or evt.get("rivalry_peak")]
+        return [
+            evt
+            for evt in self.events
+            if evt.get("arc_phase") in ["climax", "falling_action"]
+            or evt.get("rivalry_peak")
+        ]
+
 
 class TeamNarrativeEngine:
     """
     Tracks arcs for each team and rivalry, supports full-game and rivalry analytics.
     """
+
     def __init__(self):
         self.teams: Dict[str, TeamArc] = {}
         self.rivalries: List[tuple] = []
@@ -108,11 +114,13 @@ class TeamNarrativeEngine:
 
     def rivalry_highlights(self):
         highlights = {}
-        for (team1, team2) in self.rivalries:
+        for team1, team2 in self.rivalries:
             arc1 = self.teams.get(team1)
             arc2 = self.teams.get(team2)
             if arc1 and arc2:
-                highlights[(team1, team2)] = arc1.highlight_reel() + arc2.highlight_reel()
+                highlights[(team1, team2)] = (
+                    arc1.highlight_reel() + arc2.highlight_reel()
+                )
         return highlights
 
     def rivalry_summary(self, team1: str, team2: str):
@@ -129,25 +137,79 @@ class TeamNarrativeEngine:
             verdict = f"{team2} wins by {-margin}"
         return f"{team1} ({arc1.score}) vs {team2} ({arc2.score}): {verdict}"
 
+
 # Example usage:
 if __name__ == "__main__":
     engine = TeamNarrativeEngine()
     engine.add_rivalry("Lions", "Bears")
     events = [
-        {"timestamp": "2025-09-05T01:00:00", "team": "Lions", "event": "snap", "score_delta": 0},
-        {"timestamp": "2025-09-05T01:00:01", "team": "Bears", "event": "turnover", "score_delta": 0},
-        {"timestamp": "2025-09-05T01:00:05", "team": "Lions", "event": "big_play", "score_delta": 40, "momentum_delta": 2},
-        {"timestamp": "2025-09-05T01:00:10", "team": "Bears", "event": "comeback", "score_delta": 7, "momentum_delta": 3},
-        {"timestamp": "2025-09-05T01:00:15", "team": "Lions", "event": "lead_change", "score_delta": 7},
-        {"timestamp": "2025-09-05T01:00:20", "team": "Lions", "event": "game_winner", "score_delta": 3},
-        {"timestamp": "2025-09-05T01:00:25", "team": "Bears", "event": "final_whistle", "score_delta": 0}
+        {
+            "timestamp": "2025-09-05T01:00:00",
+            "team": "Lions",
+            "event": "snap",
+            "score_delta": 0,
+        },
+        {
+            "timestamp": "2025-09-05T01:00:01",
+            "team": "Bears",
+            "event": "turnover",
+            "score_delta": 0,
+        },
+        {
+            "timestamp": "2025-09-05T01:00:05",
+            "team": "Lions",
+            "event": "big_play",
+            "score_delta": 40,
+            "momentum_delta": 2,
+        },
+        {
+            "timestamp": "2025-09-05T01:00:10",
+            "team": "Bears",
+            "event": "comeback",
+            "score_delta": 7,
+            "momentum_delta": 3,
+        },
+        {
+            "timestamp": "2025-09-05T01:00:15",
+            "team": "Lions",
+            "event": "lead_change",
+            "score_delta": 7,
+        },
+        {
+            "timestamp": "2025-09-05T01:00:20",
+            "team": "Lions",
+            "event": "game_winner",
+            "score_delta": 3,
+        },
+        {
+            "timestamp": "2025-09-05T01:00:25",
+            "team": "Bears",
+            "event": "final_whistle",
+            "score_delta": 0,
+        },
     ]
     # Simulate rivalry score deltas
     for evt in events:
         if evt["team"] == "Lions":
-            evt["rival_score_delta"] = next((e["score_delta"] for e in events if e.get("team") == "Bears" and e.get("timestamp") == evt["timestamp"]), 0)
+            evt["rival_score_delta"] = next(
+                (
+                    e["score_delta"]
+                    for e in events
+                    if e.get("team") == "Bears"
+                    and e.get("timestamp") == evt["timestamp"]
+                ),
+                0,
+            )
         elif evt["team"] == "Bears":
-            evt["rival_score_delta"] = next((e["score_delta"] for e in events if e.get("team") == "Lions" and e.get("timestamp") == evt["timestamp"]), 0)
+            evt["rival_score_delta"] = next(
+                (
+                    e["score_delta"]
+                    for e in events
+                    if e.get("team") == "Lions"
+                    and e.get("timestamp") == evt["timestamp"]
+                ),
+                0,
+            )
         engine.update(evt)
 
     print(engine.full_game_storyline())

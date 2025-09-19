@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 
+
 class SyntheticDataGenerator:
     """
     Utility for generating synthetic data for pre-training or meta-learning.
@@ -19,9 +20,7 @@ class SyntheticDataGenerator:
         Returns a dict encoding task-specific parameters.
         """
         # Example: randomly generate a reward weight vector per task
-        return {
-            "reward_weights": self.rng.randn(self.state_dim)
-        }
+        return {"reward_weights": self.rng.randn(self.state_dim)}
 
     def generate_trajectory(self, task_params, length=20):
         """
@@ -35,7 +34,9 @@ class SyntheticDataGenerator:
         state = torch.from_numpy(self.rng.randn(self.state_dim)).float()
         for t in range(length):
             action = self.rng.randint(0, self.action_dim)
-            next_state = state + torch.from_numpy(0.1 * self.rng.randn(self.state_dim)).float()
+            next_state = (
+                state + torch.from_numpy(0.1 * self.rng.randn(self.state_dim)).float()
+            )
             reward = float(np.dot(task_params["reward_weights"], next_state.numpy()))
             states.append(state)
             actions.append(action)
@@ -56,13 +57,16 @@ class SyntheticDataGenerator:
         for _ in range(num_trajectories):
             task_params = self.sample_task_params()
             states, actions, rewards = self.generate_trajectory(task_params, length)
-            dataset.append({
-                "states": states,
-                "actions": actions,
-                "rewards": rewards,
-                "task_params": task_params
-            })
+            dataset.append(
+                {
+                    "states": states,
+                    "actions": actions,
+                    "rewards": rewards,
+                    "task_params": task_params,
+                }
+            )
         return dataset
+
 
 if __name__ == "__main__":
     # Example usage
