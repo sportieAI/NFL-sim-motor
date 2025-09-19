@@ -1,0 +1,33 @@
+name: Remove @copilot Assignee from Filters
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  clean-filters:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Find and update/remove 'assignee:@copilot' in .github/workflows and docs
+        run: |
+          # Remove 'assignee:@copilot' from any YAML or markdown files in .github/workflows and docs
+          find .github/workflows docs . -type f \( -name "*.yml" -o -name "*.yaml" -o -name "*.md" \) -print0 \
+            | xargs -0 sed -i 's/assignee:@copilot//g'
+
+      - name: Commit and push changes if any
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          if ! git diff --cached --quiet; then
+            git commit -m "Remove invalid @copilot assignee from filters"
+            git push
+          else
+            echo "No changes to commit"
+          fi
