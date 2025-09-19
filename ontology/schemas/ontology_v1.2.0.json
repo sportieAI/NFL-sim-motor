@@ -1,0 +1,88 @@
+{
+  "version": "1.2.0",
+  "status": "active",
+  "tag_definitions": {
+    "aggressive": {
+      "tag_name": "aggressive",
+      "description": "Play calling that prioritizes high-risk, high-reward strategies",
+      "category": "strategy",
+      "expected_confidence_range": [
+        0.0,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    },
+    "conservative": {
+      "tag_name": "conservative",
+      "description": "Play calling that prioritizes ball control and low risk",
+      "category": "strategy",
+      "expected_confidence_range": [
+        0.0,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    },
+    "redzone": {
+      "tag_name": "redzone",
+      "description": "Play occurring in the red zone (within 20 yards of goal)",
+      "category": "field_position",
+      "expected_confidence_range": [
+        0.8,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    },
+    "two_minute_drill": {
+      "tag_name": "two_minute_drill",
+      "description": "Play occurring during two-minute warning situation",
+      "category": "timing",
+      "expected_confidence_range": [
+        0.9,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    },
+    "third_down_conversion": {
+      "tag_name": "third_down_conversion",
+      "description": "Critical third down conversion attempt",
+      "category": "down_distance",
+      "expected_confidence_range": [
+        0.7,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    },
+    "test_tag": {
+      "tag_name": "test_tag",
+      "description": "Test tag for integration",
+      "category": "test",
+      "expected_confidence_range": [
+        0.0,
+        1.0
+      ],
+      "deprecated": false,
+      "deprecation_date": null,
+      "replacement_tag": null,
+      "schema": null
+    }
+  },
+  "release_date": 1758275388.0095217,
+  "deprecation_date": null,
+  "changelog": "Added tag: test_tag - Test tag for integration",
+  "hash_signature": "07644ab704646849"
+}

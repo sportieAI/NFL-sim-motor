@@ -61,3 +61,48 @@ def preprocess_data(df):
     numeric_cols = df.select_dtypes(include=np.number).columns
     df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
     return df
+
+
+def load_game_data(game_context):
+    """
+    Load comprehensive game data including team stats, player data, and stadium conditions.
+    Mock implementation for development - in production would load from real data sources.
+    """
+    home_team = game_context["home_team"]
+    away_team = game_context["away_team"]
+    stadium = game_context["stadium"]
+    
+    # Mock team data
+    team_data = {
+        home_team: {
+            "offensive_rating": 0.75,
+            "defensive_rating": 0.82,
+            "recent_form": [1, 1, 0, 1, 1],  # Last 5 games (1=win, 0=loss)
+            "home_record": "8-1"
+        },
+        away_team: {
+            "offensive_rating": 0.78,
+            "defensive_rating": 0.79,
+            "recent_form": [1, 0, 1, 1, 1],  # Last 5 games
+            "away_record": "6-3"
+        }
+    }
+    
+    # Mock player data
+    player_data = {
+        home_team: {
+            "key_players": ["Mahomes", "Kelce", "Hill"],
+            "injury_report": [],
+            "avg_fantasy_points": 28.5
+        },
+        away_team: {
+            "key_players": ["Jackson", "Andrews", "Tucker"],
+            "injury_report": ["minor_ankle"],
+            "avg_fantasy_points": 26.8
+        }
+    }
+    
+    # Get stadium conditions
+    stadium_data = ingest_stadium_conditions(stadium)
+    
+    return team_data, player_data, stadium_data
