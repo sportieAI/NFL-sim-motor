@@ -106,6 +106,39 @@ class CacheManager:
         for cache_file in self.cache_dir.glob("*.pkl"):
             cache_file.unlink()
 
+    def get_cache(self, key: str) -> Optional[Any]:
+        """Alias for get() method for backwards compatibility."""
+        return self.get(key)
+    
+    def set_cache(self, key: str, value: Any) -> None:
+        """Alias for set() method for backwards compatibility."""
+        return self.set(key, value)
+    
+    def has_cache(self, key: str) -> bool:
+        """Alias for has() method for backwards compatibility."""
+        return self.has(key)
+    
+    def ensure_artifact(self, key: str, generator_func, *args, **kwargs) -> Any:
+        """
+        Ensure artifact exists in cache, generating it if necessary.
+        
+        Args:
+            key: Cache key
+            generator_func: Function to generate the artifact if not cached
+            *args, **kwargs: Arguments to pass to generator_func
+            
+        Returns:
+            Cached or newly generated artifact
+        """
+        cached_value = self.get(key)
+        if cached_value is not None:
+            return cached_value
+            
+        # Generate and cache the artifact
+        new_value = generator_func(*args, **kwargs)
+        self.set(key, new_value)
+        return new_value
+
     def size(self) -> int:
         """Get number of cached items."""
         return len(list(self.cache_dir.glob("*.pkl")))
