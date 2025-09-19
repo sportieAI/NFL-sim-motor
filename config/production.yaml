@@ -1,0 +1,136 @@
+# Production Environment Configuration
+# DO NOT COMMIT SECRETS - Use environment variables or vault
+
+environment: production
+
+# Application Settings
+app:
+  name: "NFL-sim-motor"
+  version: "1.0.0"
+  debug: false
+  log_level: "INFO"
+
+# Randomness and Reliability
+simulation:
+  random_seed: null  # Use system entropy in production
+  deterministic_mode: false
+  error_injection_enabled: false
+  max_simulation_time: 1800  # 30 minutes timeout
+  circuit_breaker_enabled: true
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "json"
+  correlation_ids_enabled: true
+  output_file: "/var/log/nfl-sim-motor/production.log"
+  max_file_size_mb: 500
+  backup_count: 10
+  structured_logging: true
+
+# Database Configuration (High Availability)
+database:
+  postgres:
+    host: "${POSTGRES_HOST}"
+    port: "${POSTGRES_PORT:-5432}"
+    database: "${POSTGRES_DB}"
+    username: "${POSTGRES_USER}"
+    password: "${POSTGRES_PASSWORD}"  # Must be set via environment/vault
+    pool_size: 20
+    max_overflow: 50
+    echo_sql: false
+    ssl_mode: "require"
+    connection_timeout: 10
+    read_replica_enabled: true
+    read_replica_host: "${POSTGRES_READ_REPLICA_HOST}"
+  
+  redis:
+    host: "${REDIS_HOST}"
+    port: "${REDIS_PORT:-6379}"
+    db: "${REDIS_DB:-0}"
+    password: "${REDIS_PASSWORD}"
+    max_connections: 100
+    ssl_enabled: true
+    cluster_mode: true
+    sentinel_enabled: false
+
+# Storage Configuration (Production Scale)
+storage:
+  s3:
+    bucket: "${S3_BUCKET}"
+    region: "${AWS_REGION}"
+    access_key: "${AWS_ACCESS_KEY_ID}"
+    secret_key: "${AWS_SECRET_ACCESS_KEY}"
+    kms_key_id: "${AWS_KMS_KEY_ID}"
+    encryption_enabled: true
+    versioning_enabled: true
+    lifecycle_policy_enabled: true
+
+# API Configuration (Production Security)
+api:
+  host: "0.0.0.0"
+  port: 8000
+  cors_enabled: false
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+    burst_size: 10
+  ssl_enabled: true
+  ssl_cert_path: "${SSL_CERT_PATH}"
+  ssl_key_path: "${SSL_KEY_PATH}"
+
+# Security (Hardened)
+security:
+  jwt_secret: "${JWT_SECRET}"  # Must be set via vault
+  api_key_required: true
+  signed_requests_required: true
+  admin_ip_allowlist: "${ADMIN_IP_ALLOWLIST}"  # Comma-separated IPs
+  encryption_at_rest: true
+  encryption_in_transit: true
+  audit_logging_enabled: true
+
+# Monitoring & Observability (Full Stack)
+monitoring:
+  metrics_enabled: true
+  tracing_enabled: true
+  health_check_interval: 10
+  alerts_enabled: true
+  prometheus_port: 9090
+  grafana_enabled: true
+  datadog_enabled: true
+  datadog_api_key: "${DATADOG_API_KEY}"
+
+# Message Queue (Production Scale)
+messaging:
+  broker_url: "${REDIS_CLUSTER_URL}"
+  retry_policy:
+    max_retries: 5
+    backoff_multiplier: 2
+    max_backoff_seconds: 300
+  dead_letter_queue_enabled: true
+  message_persistence: true
+  high_availability: true
+
+# Performance & Scaling
+performance:
+  worker_processes: "${WORKER_PROCESSES:-4}"
+  max_concurrent_simulations: 100
+  connection_pooling: true
+  caching_enabled: true
+  cache_ttl_seconds: 300
+
+# Backup & Disaster Recovery
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 30
+  cross_region_replication: true
+  automated_testing: true
+
+# Testing (Limited in Production)
+testing:
+  property_tests_enabled: false
+  fuzz_tests_enabled: false
+  integration_tests_enabled: false
+  performance_tests_enabled: true
+  canary_deployments: true
