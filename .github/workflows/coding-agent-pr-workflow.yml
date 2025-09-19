@@ -1,0 +1,47 @@
+name: Copilot Coding Agent PR Management
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: write           # Allow writing commits to PR branches
+  pull-requests: write      # Allow updating and merging PRs
+  checks: write
+  issues: write
+
+jobs:
+  allow-agent-pr-management:
+    runs-on: ubuntu-latest
+    if: |
+      github.actor == 'github-copilot[bot]' || 
+      contains(github.event.pull_request.labels.*.name, 'copilot-agent')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python for agent (if needed)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install requirements (optional)
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: (Sample) Make agent commit to PR branch
+        run: |
+          echo "Agent can push fixes or changes as needed."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: (Sample) Merge PR if ready
+        if: github.event.pull_request.mergeable_state == 'clean'
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} --merge --admin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: (Sample) Generate and log commit message
+        run: |
+          echo "Copilot Coding Agent: generated commit message for PR #${{ github.event.pull_request.number }}"
