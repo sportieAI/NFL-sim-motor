@@ -1,1 +1,47 @@
-unittest
+# Core ML and Analytics
+numpy>=1.24.0
+scikit-learn>=1.3.0
+torch>=2.0.0
+shap>=0.41.0
+
+# Deep Learning and RL
+torch>=2.0.0
+
+# Data Processing and Storage  
+pandas>=2.0.0
+redis>=4.5.0
+motor>=3.1.0  # MongoDB async driver
+
+# Workflow and Orchestration
+prefect>=2.10.0
+aiobotocore>=2.4.0
+
+# NLP and Text Processing
+transformers>=4.20.0
+spacy>=3.5.0
+
+# Causal Inference
+dowhy>=0.9.0
+
+# Audio Processing
+librosa>=0.10.0
+
+# Clustering
+hdbscan>=0.8.29
+
+# Web Framework (for API)
+fastapi>=0.95.0
+uvicorn>=0.21.0
+
+# Testing
+pytest>=7.2.0
+pytest-asyncio>=0.21.0
+
+# Linting and Formatting
+flake8>=6.0.0
+black>=23.0.0
+
+# Visualization (optional)
+matplotlib>=3.6.0
+plotly>=5.13.0
+networkx>=3.0
