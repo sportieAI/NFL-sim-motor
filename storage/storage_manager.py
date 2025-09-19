@@ -20,7 +20,7 @@ except ImportError:
 try:
     import psycopg2
     from sqlalchemy import create_engine, Column, String, JSON, DateTime, Float, Integer, Text
-    from sqlalchemy.ext.declarative import declarative_base
+    from sqlalchemy.orm import declarative_base
     from sqlalchemy.orm import sessionmaker
     POSTGRES_AVAILABLE = True
 except ImportError:

@@ -1,6 +1,10 @@
 import os
 import pickle
 import pytest
+import sys
+
+# Add the project root to sys.path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../..'))
 
 from nfl_simulation_engine.modules.memory_continuity.cache_manager import CacheManager
 
