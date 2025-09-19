@@ -75,6 +75,92 @@ player_stats = ingest_player_stats(player_id="1234", season_year=2024)
 
 ---
 
+## 🔐 Security & Documentation
+
+- **[Security Policy](SECURITY.md)**: Secret management, key rotation, and security best practices
+- **[Changelog](CHANGELOG.md)**: Data contract changes and schema evolution history
+- **[Schema Validation](tests/test_validate_schemas.py)**: Test script for JSON schema validation
+
+### Secret Management
+All sensitive configuration should use environment variables:
+```bash
+export REDIS_URL="redis://localhost:6379/0"
+export POSTGRES_URL="postgresql://localhost:5432/nfl_sim"
+export NFL_API_KEY="your_api_key_here"
+```
+
+---
+
+## 📊 Observability & Monitoring
+
+### Structured Logging
+The engine uses structured JSON logging with correlation IDs for traceability:
+
+```python
+# Example structured log entry
+{
+  "timestamp": "2025-01-21T10:30:00Z",
+  "level": "INFO",
+  "service": "simulation_engine",
+  "correlation_id": "poss_12345_snap_67",
+  "event": "play_executed",
+  "play_type": "pass_short",
+  "yards_gained": 8,
+  "success": true,
+  "metrics": {
+    "execution_time_ms": 45,
+    "tags_applied": 3
+  }
+}
+```
+
+### Key Metrics
+
+#### Performance Metrics
+- **Latency**: p50/p95 execution time per snap
+- **Throughput**: Simulations per second
+- **Error Rate**: Failed simulations / total simulations
+- **Queue Depth**: Pending simulation requests
+
+#### Business Metrics  
+- **Tag Coverage**: Percentage of plays with ontological tags
+- **Cluster Stability**: Consistency of play clustering over time
+- **Narrative Quality**: Coherence scores for generated commentary
+- **Memory Continuity**: Long-term state preservation accuracy
+
+### Log Configuration
+Configure logging levels by environment:
+```yaml
+# staging.yaml
+logging:
+  level: DEBUG
+  structured: true
+  correlation_ids: true
+  console_output: true
+
+# prod.yaml  
+logging:
+  level: INFO
+  structured: true
+  correlation_ids: true
+  console_output: false
+  file_output: "/var/log/nfl-sim/app.log"
+```
+
+### OpenTelemetry Tracing
+The `simulate_play` pipeline is instrumented with OpenTelemetry traces:
+- Span per play execution
+- Context propagation across service boundaries
+- Custom attributes for play metadata
+- Integration with Jaeger/Zipkin for trace visualization
+
+### Monitoring Endpoints
+- **Health Check**: `GET /health` - Service health status
+- **Metrics**: `GET /metrics` - Prometheus-compatible metrics
+- **Ready Check**: `GET /ready` - Readiness for traffic
+
+---
+
 ## 📝 References
 
 - See `docs/` for coverage, CI, and API documentation.
