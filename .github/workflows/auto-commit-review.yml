@@ -1,0 +1,77 @@
+name: Automated Commit Logging and Review
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - '**'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  log-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: List recent commits
+        id: list_commits
+        run: |
+          git log -10 --pretty=format:'%h %s by %an on %ad' --date=short > recent_commits.txt
+          cat recent_commits.txt
+
+      - name: Store commit logs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: commit-log
+          path: recent_commits.txt
+
+      - name: Add commit log as PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const commits = fs.readFileSync('recent_commits.txt', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `### Recent Commits\n\`\`\`\n${commits}\n\`\`\``
+            });
+
+  auto-review:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Automated review summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            const files = await github.paginate(
+              github.rest.pulls.listFiles, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number
+              }
+            );
+            let summary = `### Automated Review\n- PR Title: **${pr.data.title}**\n- Files Changed: ${files.length}\n`;
+            summary += files.map(f => `- \`${f.filename}\` (${f.status})`).join('\n');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
