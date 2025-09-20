@@ -1,4 +1,3 @@
-"""
 🧠 Modular Intelligence Stack (Fly-ready)
 
 This stack enables full-cycle, modular NFL game intelligence—from simulation to recall and learning.
@@ -13,7 +12,6 @@ Prediction    | model_infer       | EPA, win_prob             | Strategic foresi
 Narrative     | creative_output   | summary_text, voice_params| Engagement
 Memory        | memory_continuity | DriveSnapshot             | Recall & replay
 Evaluation    | Evaluator         | policy deltas             | Learning loop
-"""
 
 from typing import Any, Dict
 
@@ -48,7 +46,7 @@ def clustering(tag_bundle: Dict[str, Any]) -> str:
     # Assign play to a cluster based on tags/features
     if "explosive_play" in tag_bundle["tags"]:
         return "cluster_explosive"
-    if "completion" in tag_bundle["tags"]:
+    if "completion" in tag_bundle["tags":
         return "cluster_safe"
     return "cluster_other"
 
