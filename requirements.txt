@@ -1,31 +1,3 @@
-# Core dependencies
-numpy>=1.21.0
-torch>=1.9.0
-scikit-learn>=1.0.0
-pandas>=1.3.0
-
-# Storage & Database
-redis>=4.0.0
-psycopg2-binary>=2.9.0
-sqlalchemy>=1.4.0
-
-# Vector similarity search
-faiss-cpu>=1.7.0
-
-# Validation & Schema
-jsonschema>=4.0.0
-pydantic>=1.8.0
-
-# Testing & Property-based testing
-pytest>=6.0.0
-hypothesis>=6.0.0
-
-# Optional ML dependencies
-# openai  # Uncomment if needed
-# dowhy  # Causal inference
-# shap  # Explainability
-# hdbscan  # Clustering
-# librosa  # Audio processing
-
-# Optional Prefect for workflows
-# prefect>=2.0.0
+streamlit
+openai
+requests
