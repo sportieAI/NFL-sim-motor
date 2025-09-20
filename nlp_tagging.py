@@ -1,44 +1,29 @@
-"""
-Dedicated NLP Tagging Module for sportieAI/NFL-sim-motor
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
 
-Handles text-to-tag/context transformation, sentiment analysis, and feature extraction for play descriptions and fan reactions.
-"""
-
-import re
-import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
+nltk.download('vader_lexicon', quiet=True)
 
 class NLPTagger:
+    """Minimal NLP tagger for play descriptions and sentiment."""
+
     def __init__(self):
-        self.vectorizer = CountVectorizer()
-        self.model = MultinomialNB()
-        self.labels = []
+        self.sia = SentimentIntensityAnalyzer()
 
-    def preprocess(self, text):
-        text = text.lower()
-        text = re.sub(r'[^a-z0-9\s]', '', text)
-        return text
-
-    def fit(self, texts, labels):
-        X = self.vectorizer.fit_transform([self.preprocess(t) for t in texts])
-        self.model.fit(X, labels)
-        self.labels = labels
-
-    def predict(self, text):
-        X = self.vectorizer.transform([self.preprocess(text)])
-        return self.model.predict(X)[0]
-
-    def sentiment(self, text):
-        # Simple rule-based sentiment analysis; replace with advanced model as needed
-        positive = ['good', 'great', 'excellent', 'win', 'success']
-        negative = ['bad', 'poor', 'fail', 'loss', 'injury']
-        score = sum([word in text for word in positive]) - sum([word in text for word in negative])
-        if score > 0: return 'positive'
-        if score < 0: return 'negative'
-        return 'neutral'
-
-# Example usage:
-# tagger = NLPTagger()
-# tagger.fit(["pass complete", "fumble lost"], ["completion", "turnover"])
-# tagger.predict("pass complete")  # -> "completion"
+    def tag(self, text):
+        tags = []
+        t = text.lower()
+        if "pass" in t:
+            tags.append("pass")
+        if "run" in t:
+            tags.append("run")
+        if "yards" in t:
+            try:
+                yards = int([w for w in t.split() if w.lstrip('-').isdigit()][0])
+            except (IndexError, ValueError):
+                yards = 0
+            if yards >= 10:
+                tags.append("explosive")
+            if yards <= 0:
+                tags.append("negative_play")
+        sentiment = self.sia.polarity_scores(text)["compound"]
+        return {"tags": tags, "sentiment": sentiment}

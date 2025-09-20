@@ -1,20 +1,22 @@
-"""
-Core simulation logic for NFL-sim-motor.
-
-Handles the main NFL play simulation routines and state transitions.
-"""
+import random
 
 class NFLSimulator:
-    def __init__(self):
-        self.state = {}
+    """Deterministic, lightweight NFL play simulator for rapid prototyping."""
 
-    def simulate_play(self, play_data):
-        """
-        Simulate a single NFL play.
-        Args:
-            play_data (dict): Info about the play to simulate.
-        Returns:
-            dict: Result of the simulation.
-        """
-        # Placeholder simulation logic
-        return {"result": "simulated", "input": play_data}
+    def simulate_play(self, state):
+        # Minimal simulation: randomly generate play outcome.
+        play_id = state.get("play_id", random.randint(1, 100000))
+        down = state.get("down", 1)
+        yards = random.choice([0, 3, 7, 12, -2])
+        description = f"Down {down}: {'Pass' if yards >= 0 else 'Run'} for {yards} yards."
+        play = {
+            "play_id": play_id,
+            "down": down,
+            "yards": yards,
+            "description": description,
+            "team": state.get("team", "NEP"),
+            "distance": state.get("distance", 10),
+            "yardline": state.get("yardline", "NEP 25"),
+            "clock": state.get("clock", "15:00 Q1"),
+        }
+        return play
