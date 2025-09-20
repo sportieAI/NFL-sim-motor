@@ -66,7 +66,7 @@ PYTHONPATH=. python benchmarks/bench_run_play.py --iterations 100
 
 **ALWAYS manually validate changes** by running a complete simulation scenario:
 ```bash
-# 1. Test core simulation engine
+# Test core simulation engine
 PYTHONPATH=. python -c "
 from engine.simulation_orchestrator import SimulationOrchestrator
 orchestrator = SimulationOrchestrator(10, 5)
