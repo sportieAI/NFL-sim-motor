@@ -1,27 +1,42 @@
-# 🏈 Running Simulations with NFL-sim-motor
+# Simulation Guide
 
 ## Historical Replay
 
-Run a historical simulation for a specific team and season (e.g., Kansas City Chiefs, 2023):
-
-```bash
-python main.py --mode=historical --team=KC --season=2023
-```
-
----
+- Run past seasons/games with real data:
+  ```bash
+  python dashboard_and_api.py --replay data/2023_week_1.json
+  ```
 
 ## Agent-Based Simulation
 
-Run a simulation using a custom agent (e.g., Dallas Cowboys, 2022):
+- Add your agent logic to `/agents/`.
+- Configure agent selection in your simulation config.
+- Example:
+  ```bash
+  python dashboard_and_api.py --agent my_agent.py
+  ```
 
-```bash
-python main.py --mode=agent --agent=MyAgent --team=DAL --season=2022
-```
+## Firehose Ingestion
 
-Replace `MyAgent` with your agent’s class name placed in the `agents/` directory.
+- Ingest live or bulk data for continuous simulation:
+  ```bash
+  python ingest.py --source live
+  ```
+
+## Benchmarking
+
+- Compare agent performance and simulation fidelity.
+- Use `/benchmarks` for ready-made scripts.
+
+## Post-Simulation Hooks
+
+- Trigger analytics, narration, export, or webhooks after each run.
+- Example: Add your script to `/post_hooks/` and register in config.
 
 ---
 
-**Tip:**  
-- For a list of valid teams, check the team abbreviations in your data or documentation.
-- Ensure your agent is implemented in the `agents/` folder and correctly referenced in the command.
+## 🧬 Optional Add-ons
+
+- LLM-based commentary and voice modules (see [EXTENSIONS.md](./EXTENSIONS.md))
+- Security & signal integrity (see [SECURITY.md](./SECURITY.md))
+- API integration (see [API_REFERENCE.md](./API_REFERENCE.md))
