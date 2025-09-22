@@ -1,104 +1,48 @@
-# NFL-sim-motor
+# Enable Microsoft Copilot with Write Access in Your Repository
 
-**NFL-sim-motor** is a modular, extensible simulation framework for American football (NFL) analysis, research, and AI/ML experimentation. It supports historical replays, agent-based simulations, reinforcement learning, and is designed for extensibility and integration.
-
----
-
-## Features
-
-- **Historical Simulation:** Replay and analyze real NFL games and seasons.
-- **Agent & AI Support:** Plug in custom agents for playcalling, reinforcement learning, and strategic experimentation.
-- **Modular Architecture:** Clear separation of core engine, analytics, agents, and data.
-- **Extensible:** Easily add new agents, analytics modules, data sources, and integrations.
-- **Automation & Scripting:** Shell scripts included for setup and running simulations across platforms (desktop, iPad, cloud).
-- **Testing & Benchmarking:** Built-in support for test cases, benchmarks, and evaluation.
+This repository is set up for seamless collaboration with [GitHub Copilot](https://github.com/features/copilot), including write access and automated correspondence.
 
 ---
 
-## Quick Start
+## 🚀 Quick Start: Add Copilot with Write Access
 
-### 1. Clone and Setup
+1. **Go to Settings → Collaborators & teams**
+2. **Invite `github-copilot[bot]`** as a collaborator.
+3. **Assign "Write" access** (or higher as needed).
 
-```sh
-git clone https://github.com/sportieAI/NFL-sim-motor.git
-cd NFL-sim-motor
-./get_started.sh
-```
-
-> **Note:** The `get_started.sh` script will create a Python virtual environment, install dependencies, and run a sample simulation.
-
-### 2. Manual Setup (if preferred)
-
-```sh
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-python main.py --mode=historical --team=KC --season=2023
-```
+> For organization-wide enablement, repeat these steps in each repository or manage via organization settings.
 
 ---
 
-## Usage
+## 🛠️ Setup for All Repositories
 
-### Run a Historical Simulation
-
-```sh
-python main.py --mode=historical --team=KC --season=2023
-```
-
-- `--mode` : Simulation mode (`historical`, `agent`, etc.)
-- `--team` : Team abbreviation (e.g., `KC` for Kansas City)
-- `--season` : NFL season year (e.g., `2023`)
-
-### Example: Custom Agent
-
-Add your agent to the `agents/` directory, then reference it via command-line arguments or configuration.
+- Navigate to each repo’s Settings > Collaborators.
+- Add `github-copilot[bot]` with write access.
+- For bulk management, use GitHub’s [organization access controls](https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories).
 
 ---
 
-## Repository Structure
+## 💬 How to Correspond with Copilot
 
-- **main.py** – Entry point for running simulations.
-- **core/** – Core simulation engine modules.
-- **agents/** – Built-in and custom AI agents.
-- **analytics/** – Analytics, reporting, and evaluation modules.
-- **data/**, **data_collection/** – Raw and processed data.
-- **features/**, **extensions/** – Feature modules and extensions.
-- **rl/** – Reinforcement learning components.
-- **evaluation/**, **benchmarks/**, **testing/**, **tests/** – Evaluation, benchmarks, and tests.
-- **dashboard/**, **visualization/** – Dashboards and visualization tools.
-- **scripts:**  
-  - `get_started.sh` – Automated setup & sample run  
-  - `setup_environment.sh` – Environment setup  
-  - `install_dependencies.sh` – Dependency management
-- **docs/** – Additional documentation.
-- **requirements.txt** – Python dependencies.
-
-> This is a partial listing; see the [full file tree](https://github.com/sportieAI/NFL-sim-motor/tree/main) for all modules.
+- Mention `@github-copilot[bot]` in issues or pull requests for suggestions.
+- Copilot will help with code, documentation, PRs, and issue triage.
+- Review Copilot’s activity in the repo’s audit log.
 
 ---
 
-## Development
+## 🔐 Security Note
 
-- Code follows modular and extensible design principles.
-- See `COPILOT_AGENT_INSTRUCTIONS.md`, `FINAL_RECOMMENDATIONS.md`, and `CODE_FINALIZATION_CHECKLIST.md` for contributor guidance.
-- PRs and issues welcome!
-
----
-
-## Documentation
-
-- Example usage: [`example_usage.py`](example_usage.py)
-- [CHANGELOG.md](CHANGELOG.md) – Updates and changes.
-- [COPILOT_AGENT_INSTRUCTIONS.md](COPILOT_AGENT_INSTRUCTIONS.md) – Copilot agent setup and guidelines.
+- Regularly review and update permissions for all bots and collaborators.
+- Use branch protection rules for sensitive branches.
+- Monitor activity via GitHub audit logs.
 
 ---
 
-## Support
+## 📚 Resources
 
-For questions and contributions, open an issue or pull request on GitHub.
+- [GitHub Copilot Docs](https://docs.github.com/en/copilot)
+- [Managing Access to Repositories](https://docs.github.com/en/github/setting-up-and-managing-your-github-user-account/managing-access-to-your-personal-repositories)
 
 ---
 
-**© sportieAI 2025** | MIT License
+_This README was generated automatically to streamline Copilot onboarding and collaboration._
