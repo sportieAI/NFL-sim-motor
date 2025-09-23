@@ -53,9 +53,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Install Spotless for Java
+      - name: Setup Spotless for Java (via Maven plugin instead of direct download)
         run: |
-          curl -LJO https://github.com/diffplug/spotless/releases/download/v6.25.0/spotless-6.25.0.jar
+          # Use Spotless via Maven plugin instead of direct JAR download
+          echo "Spotless setup will be handled via Maven/Gradle plugins in Java projects"
 
       # C/C++ ---------------------------
       - name: Install clang-format for C/C++

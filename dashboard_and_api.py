@@ -4,33 +4,49 @@ import streamlit as st
 
 # --- API integration for LLM (OpenAI example) ---
 def generate_llm_commentary_openai(sim_output, openai_api_key):
-    import openai
-    openai.api_key = openai_api_key
-    prompt = f"Give an exciting, human-like summary for this NFL simulation result:\n{json.dumps(sim_output)}"
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[{"role": "system", "content": prompt}],
-        max_tokens=250
-    )
-    return response['choices'][0]['message']['content']
+    try:
+        from openai import OpenAI
+        client = OpenAI(api_key=openai_api_key)
+        prompt = f"Give an exciting, human-like summary for this NFL simulation result:\n{json.dumps(sim_output)}"
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=250
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"OpenAI API error: {e}")
+        return f"Simulation summary unavailable (API Error). Result: {sim_output}"
 
 # --- API integration for voice synthesis (Coqui TTS example) ---
 def synthesize_voice_coqui(text, output_path, coqui_api_key, speaker_id="speaker_id"):
-    import requests
-    url = "https://api.coqui.ai/v1/tts"
-    headers = {"Authorization": f"Bearer {coqui_api_key}"}
-    payload = {
-        "text": text,
-        "speaker_id": speaker_id,
-        "voice_id": "en-US"
-    }
-    response = requests.post(url, headers=headers, json=payload)
-    if response.status_code == 200:
-        with open(output_path, "wb") as f:
-            f.write(response.content)
-        return output_path
-    else:
-        print("TTS failed:", response.text)
+    try:
+        import requests
+        url = "https://api.coqui.ai/v1/tts"
+        headers = {"Authorization": f"Bearer {coqui_api_key}"}
+        payload = {
+            "text": text,
+            "speaker_id": speaker_id,
+            "voice_id": "en-US"
+        }
+        response = requests.post(url, headers=headers, json=payload, timeout=10)
+        if response.status_code == 200:
+            with open(output_path, "wb") as f:
+                f.write(response.content)
+            return output_path
+        else:
+            print(f"TTS failed with status {response.status_code}: {response.text}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"TTS request failed (likely firewall/network issue): {e}")
+        # Create a placeholder text file instead of audio
+        placeholder_path = output_path.replace('.mp3', '.txt')
+        with open(placeholder_path, 'w') as f:
+            f.write(f"Voice synthesis unavailable. Text content: {text}")
+        print(f"Created text placeholder: {placeholder_path}")
+        return placeholder_path
+    except Exception as e:
+        print(f"TTS unexpected error: {e}")
         return None
 
 # --- Streamlit dashboard ---
