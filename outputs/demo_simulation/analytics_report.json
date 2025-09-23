@@ -1,0 +1,20 @@
+{
+  "game_id": "demo_001",
+  "analytics": {
+    "win_probability": {
+      "KC": 0.65,
+      "BAL": 0.35
+    },
+    "expected_points_added": {
+      "KC": 8.5,
+      "BAL": 6.2
+    },
+    "key_metrics": {
+      "total_plays": 145,
+      "time_of_possession": {"KC": "32:15", "BAL": "27:45"},
+      "third_down_efficiency": {"KC": "7/12", "BAL": "5/11"}
+    }
+  },
+  "narrative_summary": "Thrilling AFC Championship preview ends with Kansas City Chiefs edging Baltimore Ravens 27-24 in a dramatic finish at Arrowhead Stadium.",
+  "generated_at": "2023-12-15T20:30:00Z"
+}

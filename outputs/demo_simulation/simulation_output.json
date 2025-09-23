@@ -1,0 +1,17 @@
+{
+  "game_id": "demo_001",
+  "teams": {"home": "KC", "away": "BAL"},
+  "final_score": {"home": 27, "away": 24},
+  "quarter": 4,
+  "clock": "00:00",
+  "winner": "KC",
+  "key_plays": [
+    {"quarter": 1, "time": "12:15", "play": "TD pass to Kelce", "team": "KC"},
+    {"quarter": 2, "time": "8:30", "play": "TD run by Jackson", "team": "BAL"},
+    {"quarter": 4, "time": "2:15", "play": "FG by Butker for the win", "team": "KC"}
+  ],
+  "stats": {
+    "KC": {"rushing_yards": 120, "passing_yards": 285, "turnovers": 1},
+    "BAL": {"rushing_yards": 165, "passing_yards": 245, "turnovers": 2}
+  }
+}
