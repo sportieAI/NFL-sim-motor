@@ -1,0 +1,19 @@
+{
+  "total_yards_kc": 419,
+  "total_yards_sf": 332,
+  "completion_percentage": 1.07,
+  "time_of_possession_kc": 1800,
+  "time_of_possession_sf": 1800,
+  "turnovers_kc": 1,
+  "turnovers_sf": 2,
+  "first_downs_kc": 29,
+  "first_downs_sf": 22,
+  "total_penalties": 7,
+  "total_penalty_yards": 75,
+  "red_zone_efficiency": 0.9,
+  "third_down_conversion": 0.6,
+  "turnovers_differential": -1,
+  "sacks": 5,
+  "interceptions": 3,
+  "fumbles": 1
+}
