@@ -1,0 +1,21 @@
+{
+  "teams": [
+    {
+      "name": "KC", 
+      "points": 21
+    },
+    {
+      "name": "SF",
+      "points": 17
+    }
+  ],
+  "final_score": {
+    "home": 21,
+    "away": 17
+  },
+  "winner": "KC",
+  "total_plays": 150,
+  "game_duration": 3600,
+  "venue": "Arrowhead Stadium",
+  "weather": "Clear, 72°F"
+}

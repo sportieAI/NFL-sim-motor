@@ -1,0 +1,16 @@
+{
+  "total_yards_home": 365,
+  "total_yards_away": 342,
+  "completion_percentage": 0.68,
+  "time_of_possession_home": 1950,
+  "time_of_possession_away": 1650,
+  "turnovers_home": 1,
+  "turnovers_away": 2,
+  "first_downs_home": 18,
+  "first_downs_away": 16,
+  "penalties": 8,
+  "penalty_yards": 75,
+  "red_zone_efficiency": 0.75,
+  "third_down_conversion": 0.42,
+  "sacks": 4
+}
