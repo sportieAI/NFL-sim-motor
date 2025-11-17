@@ -1,0 +1,35 @@
+# Core simulation files — require review by @sportieAI
+/main_sim_loop.py        @sportieAI
+/main_possession_loop.py @sportieAI
+/simulate_play.py        @sportieAI
+/state_updater.py        @sportieAI
+/turnover_logic.py       @sportieAI
+/validators.py           @sportieAI
+/strategic_cognition.py  @sportieAI
+/Agent.py                @sportieAI
+/agent.py                @sportieAI
+/schemas/                @sportieAI
+/data_pipeline.py        @sportieAI
+/data_management.py      @sportieAI
+/llm_narrative.py        @sportieAI
+/creative_output.py      @sportieAI
+/output_formatter.py     @sportieAI
+/streaming_orchestrator.py @sportieAI
+
+# Docs & onboarding — can auto-merge with passing checks
+/README.md               @sportieAI
+/ONBOARDING.md           @sportieAI
+/QUICKSTART.md           @sportieAI
+/API_REFERENCE.md        @sportieAI
+/SIMULATION_GUIDE.md     @sportieAI
+/DATA_PIPELINE_GUIDE.md  @sportieAI
+/SAAS_DEPLOYMENT.md      @sportieAI
+/BENCHMARKING.md         @sportieAI
+/EXTENSIONS.md           @sportieAI
+/FINAL_RECOMMENDATIONS.md @sportieAI
+/docs/                   @sportieAI
+
+# Infra & CI — can auto-merge with passing checks
+/.github/                @sportieAI
+/scripts/                @sportieAI
+/docker/                 @sportieAI
