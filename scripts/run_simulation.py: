@@ -1,0 +1,24 @@
+import argparse
+from pathlib import Path
+# Import your actual entrypoint(s)
+# from main_sim_loop import run_simulation
+
+def stub_run(seed: str) -> dict:
+    # Replace with real simulation call
+    return {
+        "seed": seed,
+        "points_home": 7.0,
+        "points_away": 3.0,
+        "win_prob_home": 0.62,
+        "events": [{"type": "drive", "result": "TD"}],
+    }
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--seed", required=True)
+    parser.add_argument("--output", default="simulation_results.json")
+    args = parser.parse_args()
+
+    results = stub_run(args.seed)
+    Path(args.output).write_text(__import__("json").dumps(results, indent=2))
+    print(f"Wrote {args.output}")
