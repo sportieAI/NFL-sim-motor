@@ -1,0 +1,49 @@
+{
+  "seed": "week1-2025-baseline",
+  "game_id": "2025_KC_vs_BAL_week1",
+  "points_home": 24,
+  "points_away": 20,
+  "win_prob_home": 0.58,
+  "events": [
+    {
+      "quarter": 1,
+      "time_remaining": "12:30",
+      "possession_team": "KC",
+      "event_type": "drive",
+      "event_result": "TD",
+      "player_id": "QB15",
+      "coach_override": "Reid-format",
+      "emotional_overlay": "trust-loop"
+    },
+    {
+      "quarter": 2,
+      "time_remaining": "05:45",
+      "possession_team": "BAL",
+      "event_type": "drive",
+      "event_result": "TD",
+      "player_id": "QB08",
+      "coach_override": "Kansas-stamp",
+      "emotional_overlay": "volatility-suppression"
+    },
+    {
+      "quarter": 3,
+      "time_remaining": "09:10",
+      "possession_team": "KC",
+      "event_type": "drive",
+      "event_result": "FG",
+      "player_id": "K07",
+      "coach_override": "override-aware",
+      "emotional_overlay": "momentum-anchor"
+    },
+    {
+      "quarter": 4,
+      "time_remaining": "02:15",
+      "possession_team": "BAL",
+      "event_type": "drive",
+      "event_result": "FG",
+      "player_id": "K09",
+      "coach_override": "trust-loop-recovery",
+      "emotional_overlay": "volatility-suppression"
+    }
+  ]
+}
