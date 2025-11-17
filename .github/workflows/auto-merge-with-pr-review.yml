@@ -13,9 +13,35 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: main
-      - name: Merge PR branch into main
+      - name: Safe: Merge PR branch into main if it exists on origin
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
+
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git merge ${{ github.event.pull_request.head.ref }}
-          git push origin main
+
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+
+          if [ -z "$BRANCH_NAME" ]; then
+            echo "No source branch detected (empty). Skipping merge."
+            exit 0
+          fi
+
+          echo "Checking for remote branch: $BRANCH_NAME"
+          if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
+            echo "Remote branch exists. Fetching and merging..."
+            git fetch --no-tags --depth=1 origin "$BRANCH_NAME"
+            if ! git merge --no-edit --no-ff "origin/$BRANCH_NAME"; then
+              echo "Merge failed or had conflicts. Aborting merge and exiting with error."
+              git merge --abort || true
+              exit 1
+            fi
+            echo "Pushing merged main branch to origin"
+            git push origin main
+          else
+            echo "Remote branch origin/$BRANCH_NAME not found. Skipping merge to avoid failure."
+            exit 0
+          fi
