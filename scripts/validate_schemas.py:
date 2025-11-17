@@ -1,0 +1,27 @@
+import sys
+from pathlib import Path
+from deepdiff import DeepDiff
+
+# Example: compare current JSON schema files to locked baselines
+BASELINE_DIR = Path("tests/schema_baselines")
+CURRENT_DIR = Path("schemas")
+
+def main():
+    failures = []
+    for baseline in BASELINE_DIR.glob("*.json"):
+        current = CURRENT_DIR / baseline.name
+        if not current.exists():
+            failures.append(f"Missing current schema: {current}")
+            continue
+        d1 = baseline.read_text()
+        d2 = current.read_text()
+        diff = DeepDiff(d1, d2, ignore_order=True)
+        if diff:
+            failures.append(f"Schema drift in {baseline.name}: {diff}")
+
+    if failures:
+        print("\n".join(failures))
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
