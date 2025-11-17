@@ -1,1 +1,30 @@
+{
+  "seed": "2007-pats-drive-01",
+  "game_id": "2007_NE_vs_NYJ_week1",
+  "points_home": 7,
+  "points_away": 3,
+  "win_prob_home": 0.62,
+  "events": [
+    {
+      "quarter": 1,
+      "time_remaining": "10:45",
+      "possession_team": "NE",
+      "event_type": "drive",
+      "event_result": "TD",
+      "player_id": "QB12",
+      "coach_override": "Reid-format",
+      "emotional_overlay": "trust-loop"
+    },
+    {
+      "quarter": 1,
+      "time_remaining": "08:12",
+      "possession_team": "NYJ",
+      "event_type": "drive",
+      "event_result": "FG",
+      "player_id": "K04",
+      "coach_override": "Kansas-stamp",
+      "emotional_overlay": "volatility-suppression"
+    }
+  ]
+}
 
