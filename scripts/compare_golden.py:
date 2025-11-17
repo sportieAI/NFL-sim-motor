@@ -1,0 +1,35 @@
+import argparse, json, sys
+from deepdiff import DeepDiff
+
+def within_tolerance(baseline, candidate, tol_points, tol_winprob):
+    p_home_ok = abs(candidate["points_home"] - baseline["points_home"]) <= tol_points
+    p_away_ok = abs(candidate["points_away"] - baseline["points_away"]) <= tol_points
+    wph_ok = abs(candidate["win_prob_home"] - baseline["win_prob_home"]) <= tol_winprob
+    return p_home_ok and p_away_ok and wph_ok
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--baseline", required=True)
+    parser.add_argument("--candidate", required=True)
+    parser.add_argument("--tolerance-points", type=float, default=0.5)
+    parser.add_argument("--tolerance-winprob", type=float, default=0.02)
+    args = parser.parse_args()
+
+    baseline = json.load(open(args.baseline))
+    candidate = json.load(open(args.candidate))
+
+    ok = within_tolerance(baseline, candidate, args.tolerance_points, args.tolerance_winprob)
+    report = []
+    report.append(f"Tolerances: points={args.tolerance_points}, winprob={args.tolerance_winprob}")
+    report.append(f"Baseline vs Candidate: {baseline} vs {candidate}")
+    diff = DeepDiff(baseline, candidate, ignore_order=True)
+    report.append(f"DeepDiff: {diff}")
+
+    with open("comparison_report.md", "w") as f:
+        f.write("\n\n".join(report))
+
+    if not ok:
+        print("Golden-run drift exceeds tolerance.")
+        sys.exit(1)
+
+    print("Golden-run within tolerance.")
