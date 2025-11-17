@@ -8,28 +8,13 @@ on:
     branches: [main]
 
 jobs:
-  setup:
-    name: Setup
-    runs-on: ubuntu-latest
-    outputs:
-      python_matrix: ${{ steps.set-matrix.outputs.python_matrix }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set Python matrix
-        id: set-matrix
-        run: |
-          echo 'python_matrix=["3.10","3.11","3.12"]' >> $GITHUB_OUTPUT
-
   lint-and-test:
     name: Lint and unit tests
-    needs: setup
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ${{ fromJson(needs.setup.outputs.python_matrix) }}
+        python-version: [ "3.10", "3.11", "3.12" ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,8 +36,6 @@ jobs:
           flake8 .
 
       - name: Run unit tests (pytest)
-        env:
-          PYTHONWARNINGS: default
         run: |
           pip install pytest pytest-cov
           pytest -q --disable-warnings --maxfail=1 --cov=.
@@ -76,12 +59,12 @@ jobs:
           pip install -r requirements.txt
           pip install pydantic jsonschema deepdiff
 
-      - name: Validate schemas and contracts
+      - name: Validate schemas
         run: |
           python scripts/validate_schemas.py
 
   golden-run:
-    name: Golden-run comparison
+    name: Golden-run comparisons
     runs-on: ubuntu-latest
     needs: [lint-and-test, schema-validation]
     steps:
@@ -101,19 +84,31 @@ jobs:
 
       - name: Run simulation (PR)
         env:
-          SIM_SEED: "2007-pats-drive-01"
-          SIM_TOLERANCE_POINTS: "0.5"
-          SIM_TOLERANCE_WINPROB: "0.02"
+          SIM_SEED: "week1-2025-baseline"
         run: |
           python scripts/run_simulation.py --seed "$SIM_SEED" --output pr_simulation_results.json
 
-      - name: Compare against golden baseline
+      # Compare against 2007 Patriots baseline
+      - name: Compare vs 2007 baseline
         run: |
           python scripts/compare_golden.py \
             --baseline tests/golden_runs/2007-pats-drive-01.json \
             --candidate pr_simulation_results.json \
-            --tolerance-points "$SIM_TOLERANCE_POINTS" \
-            --tolerance-winprob "$SIM_TOLERANCE_WINPROB"
+            --tolerance-points 0.5 \
+            --tolerance-winprob 0.02
+      - name: Rename 2007 drift CSV
+        run: mv drift_diagnostics.csv drift_diagnostics_2007.csv
+
+      # Compare against Week 1 2025 baseline
+      - name: Compare vs Week1 2025 baseline
+        run: |
+          python scripts/compare_golden.py \
+            --baseline tests/golden_runs/week1-2025-baseline.json \
+            --candidate pr_simulation_results.json \
+            --tolerance-points 0.5 \
+            --tolerance-winprob 0.02
+      - name: Rename Week1 drift CSV
+        run: mv drift_diagnostics.csv drift_diagnostics_week1.csv
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -122,50 +117,7 @@ jobs:
           path: |
             pr_simulation_results.json
             comparison_report.md
+            drift_diagnostics_2007.csv
+            drift_diagnostics_week1.csv
+          retention-days: 90
 
-  docs-infra-automerge:
-    name: Automerge docs/infra (label-gated)
-    runs-on: ubuntu-latest
-    needs: [golden-run]
-    if: |
-      github.event_name == 'pull_request' &&
-      contains(github.event.pull_request.labels.*.name, 'automerge') &&
-      !cancelled() && !failure()
-    steps:
-      - name: Check changed paths are docs/infra only
-        uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            docs:
-              - 'README.md'
-              - 'ONBOARDING.md'
-              - 'QUICKSTART.md'
-              - 'docs/**'
-            infra:
-              - '.github/**'
-              - 'docker/**'
-              - 'scripts/**'
-            simulation_core:
-              - 'main_sim_loop.py'
-              - 'simulate_play.py'
-              - 'state_updater.py'
-              - 'validators.py'
-              - 'strategic_cognition.py'
-              - 'Agent.py'
-              - 'agent.py'
-              - 'schemas/**'
-              - 'data_pipeline.py'
-
-      - name: Fail if simulation core touched
-        if: steps.changes.outputs.simulation_core == 'true'
-        run: |
-          echo "Simulation core files changed; automerge not allowed."
-          exit 1
-
-      - name: Enable auto-merge
-        run: |
-          gh pr merge "$PR_NUMBER" --merge --auto
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
