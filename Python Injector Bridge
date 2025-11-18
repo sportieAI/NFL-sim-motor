@@ -1,0 +1,40 @@
+# BRIDGE SCRIPT: The "Nervous System" Link
+import pandas as pd
+from core_models import bayesian_model, monte_carlo_sim  # Your existing repo models
+
+def run_sportie_prediction(game_id):
+    # 1. FETCH THE BRAIN (Read Excel Logic)
+    # Pulls the live 'Kansas Stank' variables from Sheet 26.0
+    formula_map = pd.read_excel("SportieAI_Master.xlsx", sheet_name="26.0_Formula_Map")
+    override_tier = formula_map.loc["PR-WIN%_PYTHAG_V2", "Override_Factor"] 
+    
+    # 2. CHECK THE HEALTH (Read Drift Diagnostics)
+    # Checks Sheet 27.0 to see which model is stable
+    drift_data = pd.read_excel("SportieAI_Master.xlsx", sheet_name="27.0_Drift_Diagnostics")
+    drift_index = drift_data.loc[game_id, "Drift_Index"]
+    
+    # 3. TOLIP-OC DECISION GATE (The Selector)
+    if drift_index > 0.8:
+        # High Drift/Volatility detected -> Force Monte Carlo to smooth variance
+        print(f"⚠️ High Drift ({drift_index}). Engaging Monte Carlo Suppression.")
+        raw_prediction = monte_carlo_sim(game_id, simulations=10000)
+        final_prediction = raw_prediction * 0.90  # Apply volatility dampener
+        tool_used = "Monte Carlo + Suppression"
+        
+    elif override_tier > 1.05:
+        # Strong Override Logic detected -> Force Bayesian to trust the 'Gut'
+        print(f"🔒 Override Locked. Engaging Bayesian Update.")
+        raw_prediction = bayesian_model(game_id, prior=override_tier)
+        final_prediction = raw_prediction 
+        tool_used = "Bayesian + Override Lock"
+        
+    else:
+        # Standard context -> Use standard Regression
+        final_prediction = linear_regression(game_id)
+        tool_used = "Standard Regression"
+
+    # 4. WRITE TO MEMORY (Update Tracker)
+    # Logs the decision back to the Prediction Arsenal Tracker for future learning
+    update_tracker_sheet(game_id, tool_used, final_prediction)
+    
+    return final_prediction
